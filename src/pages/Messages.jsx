@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { chatMessages, getUserById, currentUser } from '../data/mockData';
 import { useStore } from '../data/store';
+import { avatarUrl } from '../utils/images';
 
 export default function Messages() {
   const store = useStore();
@@ -75,9 +76,11 @@ export default function Messages() {
                   className="w-full flex items-center gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors text-left"
                 >
                   <div className="relative">
-                    <div className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
-                      {user.name[0]}
-                    </div>
+                    <img
+                      src={avatarUrl(user.student_id)}
+                      alt={user.name}
+                      className="w-12 h-12 rounded-full bg-gray-100"
+                    />
                     {c.unread > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center font-bold">
                         {c.unread}
@@ -134,9 +137,11 @@ export default function Messages() {
         >
           ←
         </button>
-        <div className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold">
-          {contact?.name?.[0]}
-        </div>
+        <img
+          src={avatarUrl(contact?.student_id)}
+          alt={contact?.name}
+          className="w-9 h-9 rounded-full bg-gray-100"
+        />
         <div>
           <div className="text-sm font-medium text-gray-800">{contact?.name}</div>
           <div className="text-xs text-gray-400">{contact?.college}</div>
@@ -174,7 +179,7 @@ export default function Messages() {
         />
         <button
           onClick={handleSend}
-          className="bg-primary text-white w-9 h-9 rounded-full flex items-center justify-center text-sm hover:bg-blue-700 transition-colors shrink-0"
+          className="bg-primary text-white w-9 h-9 rounded-full flex items-center justify-center text-sm hover:bg-primary-light transition-colors shrink-0"
         >
           ↑
         </button>

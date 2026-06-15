@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { orders, skills, demands, getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
 import { useAuth } from '../data/AuthContext';
+import { avatarUrl } from '../utils/images';
+import { ProfileSkeleton } from '../components/Skeleton';
 
 const statusColors = {
   '待确认': 'bg-orange-100 text-orange-700',
@@ -35,7 +37,16 @@ export default function Profile() {
   const [orderFilter, setOrderFilter] = useState('全部');
   const [showEvals, setShowEvals] = useState(false);
   const [evalTab, setEvalTab] = useState('aboutMe');
+  const [loading, setLoading] = useState(true);
   const store = useStore();
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      const timer = setTimeout(() => setLoading(false), 600);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoggedIn]);
+
   const mySkills = user ? skills.filter(s => s.provider_id === user.student_id) : [];
   const myDemands = user ? demands.filter(d => d.demander_id === user.student_id) : [];
   const { byMe, aboutMe } = user ? store.getMyEvals(user.student_id) : { byMe: [], aboutMe: [] };
@@ -53,7 +64,7 @@ export default function Profile() {
         <p className="text-sm text-gray-500 mb-6">登录后可查看个人信息和工单</p>
         <button
           onClick={() => navigate('/login')}
-          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-primary-light transition-colors"
         >
           登录 / 注册
         </button>
@@ -61,17 +72,21 @@ export default function Profile() {
     );
   }
 
+  if (loading) return <ProfileSkeleton />;
+
   return (
-    <div className="min-h-screen md:flex md:gap-6 md:p-6 md:max-w-5xl md:mx-auto">
+    <div className="min-h-screen md:flex md:gap-6 md:p-6 md:max-w-5xl md:mx-auto page-enter">
       {/* ====== 左侧：个人信息卡片 ====== */}
       <div className="md:w-80 md:shrink-0">
         <div className="bg-white md:rounded-xl md:shadow-sm md:sticky md:top-6">
           {/* 头像 + 基本信息 */}
           <div className="bg-primary text-white px-4 py-6 md:rounded-t-xl">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold border-2 border-white/40">
-                {user.name[0]}
-              </div>
+              <img
+                src={avatarUrl(user.student_id)}
+                alt={user.name}
+                className="w-16 h-16 rounded-full bg-white/20 border-2 border-white/40"
+              />
               <div>
                 <div className="text-lg font-bold">{user.name}</div>
                 <div className="text-sm text-white/80 mt-0.5">{user.college}</div>
@@ -197,7 +212,13 @@ export default function Profile() {
               </button>
             </div>
             {currentEvals.length === 0 ? (
-              <div className="text-center py-6 text-gray-400 text-sm">暂无评价</div>
+              <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+                <svg className="w-16 h-16 mb-3 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                <p className="text-sm font-medium text-gray-500">暂无评价</p>
+                <p className="text-xs text-gray-400 mt-1">完成工单后可以互相评价</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {currentEvals.map(e => {
@@ -205,8 +226,12 @@ export default function Profile() {
                   return (
                     <div key={e.evaluation_id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <Link to={`/user/${evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id}`} className="w-7 h-7 rounded-full bg-gray-300 text-white flex items-center justify-center text-[10px] font-bold hover:opacity-80 transition-opacity">
-                          {other?.name?.[0]}
+                        <Link to={`/user/${evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id}`} className="hover:opacity-80 transition-opacity">
+                          <img
+                            src={avatarUrl(evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id)}
+                            alt={other?.name}
+                            className="w-7 h-7 rounded-full bg-gray-100"
+                          />
                         </Link>
                         <Link to={`/user/${evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id}`} className="text-xs font-medium text-gray-700 hover:text-primary transition-colors">
                           {other?.name}
@@ -246,7 +271,12 @@ export default function Profile() {
         {/* 工单列表 */}
         <div className="bg-white px-4 pb-4 md:rounded-xl md:shadow-sm">
           {filteredOrders.length === 0 ? (
-            <div className="text-center py-10 text-gray-400 text-sm">暂无该状态工单</div>
+            <div className="flex flex-col items-center justify-center py-10 text-gray-400">
+              <svg className="w-16 h-16 mb-3 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-sm font-medium text-gray-500">暂无该状态工单</p>
+            </div>
           ) : (
             <div className="divide-y divide-gray-50">
               {filteredOrders.slice(0, 5).map(order => (

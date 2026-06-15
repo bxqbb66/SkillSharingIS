@@ -134,7 +134,7 @@ export default function Login() {
 
           <button
             onClick={tab === 'login' ? handleLogin : handleRegister}
-            className="w-full bg-primary text-white font-medium py-2.5 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+            className="w-full bg-primary text-white font-medium py-2.5 rounded-lg text-sm hover:bg-primary-light transition-colors"
           >
             {tab === 'login' ? '登录' : '注册'}
           </button>

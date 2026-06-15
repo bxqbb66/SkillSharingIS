@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { orders } from '../data/mockData';
+import { ListSkeleton } from '../components/Skeleton';
 
 const statusColors = {
   '待确认': 'bg-orange-100 text-orange-700',
@@ -13,6 +14,12 @@ const statusColors = {
 
 export default function Orders() {
   const [orderFilter, setOrderFilter] = useState('全部');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const filteredOrders = orderFilter === '全部'
     ? orders
@@ -40,18 +47,23 @@ export default function Orders() {
       </div>
 
       {/* 工单列表 */}
-      {filteredOrders.length === 0 ? (
+      {loading ? (
+        <ListSkeleton rows={4} />
+      ) : filteredOrders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-          <div className="text-5xl mb-4">📋</div>
-          <p className="text-sm">暂无该状态工单</p>
+          <svg className="w-24 h-24 mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          </svg>
+          <p className="text-sm font-medium text-gray-500">暂无该状态工单</p>
+          <p className="text-xs mt-1 text-gray-400">去广场看看有什么可以帮助的</p>
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2 page-enter">
           {filteredOrders.map(order => (
             <Link
               key={order.order_id}
               to={`/order/${order.order_id}`}
-              className="block bg-white rounded-xl shadow-sm p-4 hover:shadow-md transition-shadow"
+              className="block bg-white rounded-xl shadow-sm p-4 hover-card"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1 min-w-0">

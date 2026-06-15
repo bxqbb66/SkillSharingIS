@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { orders, progressLogs, getUserById, currentUser } from '../data/mockData';
 import { useStore } from '../data/store';
+import { avatarUrl } from '../utils/images';
 
 const statusBg = {
   '待确认': 'bg-yellow-50 border-yellow-200',
@@ -43,7 +44,7 @@ export default function OrderDetail() {
         <p className="text-sm text-gray-500 mb-6">工单 ID：{id}</p>
         <button
           onClick={() => navigate('/orders', { replace: true })}
-          className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-light transition-colors"
         >
           返回我的工单
         </button>
@@ -162,11 +163,11 @@ export default function OrderDetail() {
           {isProvider ? '需求方信息' : '服务方信息'}
         </h3>
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white ${
-            isProvider ? 'bg-amber-500' : 'bg-primary'
-          }`}>
-            {otherParty?.name?.[0]}
-          </div>
+          <img
+            src={avatarUrl(otherParty?.student_id)}
+            alt={otherParty?.name}
+            className="w-10 h-10 rounded-full bg-gray-100"
+          />
           <div>
             <div className="text-sm font-medium text-gray-800">{otherParty?.name}</div>
             <div className="text-xs text-gray-500">{otherParty?.college}</div>
@@ -183,7 +184,7 @@ export default function OrderDetail() {
         )}
 
         {currentStatus === '进行中' && isProvider && (
-          <button onClick={() => setShowDeliver(true)} className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-blue-700 transition-colors">
+          <button onClick={() => setShowDeliver(true)} className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors">
             提交交付成果
           </button>
         )}
@@ -193,7 +194,7 @@ export default function OrderDetail() {
             <button onClick={() => setShowDeliver(true)} className="flex-1 bg-red-50 text-red-600 border border-red-200 font-medium py-3 rounded-xl text-sm hover:bg-red-100 transition-colors">
               发起申诉
             </button>
-            <button onClick={handleAccept} className="flex-1 bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-blue-700 transition-colors">
+            <button onClick={handleAccept} className="flex-1 bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors">
               确认验收并付款
             </button>
           </div>
@@ -232,7 +233,7 @@ export default function OrderDetail() {
             <textarea rows={4} placeholder={currentStatus === '待验收' && isDemander ? '请描述申诉原因...' : '上传截图链接，或输入交付说明...'} value={deliverText} onChange={e => setDeliverText(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary mb-4" />
             <div className="flex gap-3">
               <button onClick={() => setShowDeliver(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
-              <button onClick={handleDeliver} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors">确认提交</button>
+              <button onClick={handleDeliver} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-light transition-colors">确认提交</button>
             </div>
           </div>
         </div>
@@ -252,7 +253,7 @@ export default function OrderDetail() {
             <textarea rows={3} placeholder="写下你的评价..." value={evalText} onChange={e => setEvalText(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary mb-4" />
             <div className="flex gap-3">
               <button onClick={() => setShowEvaluate(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
-              <button onClick={handleEvaluate} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors">提交评价</button>
+              <button onClick={handleEvaluate} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-light transition-colors">提交评价</button>
             </div>
           </div>
         </div>

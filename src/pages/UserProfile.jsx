@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getUserById, skills, demands } from '../data/mockData';
 import { useStore } from '../data/store';
+import { avatarUrl } from '../utils/images';
 import SkillCard from '../components/SkillCard';
 import DemandCard from '../components/DemandCard';
+import { ProfileSkeleton } from '../components/Skeleton';
 
 const levelBadge = {
   'A': 'bg-green-500',
@@ -17,8 +19,17 @@ export default function UserProfile() {
   const navigate = useNavigate();
   const store = useStore();
   const [tab, setTab] = useState('skills');
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const user = getUserById(id);
+
+  if (loading) return <ProfileSkeleton />;
+
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
@@ -27,7 +38,7 @@ export default function UserProfile() {
         <p className="text-sm text-gray-500 mb-6">该用户可能已注销或ID不存在</p>
         <button
           onClick={() => navigate(-1)}
-          className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-primary-light transition-colors"
         >
           返回上一页
         </button>
@@ -57,9 +68,11 @@ export default function UserProfile() {
       <div className="bg-white mx-4 md:mx-0 md:rounded-xl md:shadow-sm">
         <div className="bg-primary text-white px-6 py-6 md:rounded-t-xl">
           <div className="flex items-center gap-5">
-            <div className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center text-3xl font-bold border-2 border-white/40 shrink-0">
-              {user.name[0]}
-            </div>
+            <img
+              src={avatarUrl(user.student_id)}
+              alt={user.name}
+              className="w-20 h-20 rounded-full bg-white/20 border-2 border-white/40 shrink-0"
+            />
             <div>
               <div className="text-xl font-bold">{user.name}</div>
               <div className="text-sm text-white/80 mt-1">{user.college}</div>
@@ -128,7 +141,12 @@ export default function UserProfile() {
         {tab === 'skills' && (
           <>
             {userSkills.length === 0 ? (
-              <div className="text-center py-16 text-gray-400 text-sm">Ta还没有发布技能</div>
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <svg className="w-20 h-20 mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                <p className="text-sm font-medium text-gray-500">Ta还没有发布技能</p>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {userSkills.map(skill => (
@@ -142,7 +160,12 @@ export default function UserProfile() {
         {tab === 'demands' && (
           <>
             {userDemands.length === 0 ? (
-              <div className="text-center py-16 text-gray-400 text-sm">Ta还没有发布需求</div>
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <svg className="w-20 h-20 mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                </svg>
+                <p className="text-sm font-medium text-gray-500">Ta还没有发布需求</p>
+              </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {userDemands.map(demand => (
@@ -156,7 +179,12 @@ export default function UserProfile() {
         {tab === 'evals' && (
           <>
             {userEvals.length === 0 ? (
-              <div className="text-center py-16 text-gray-400 text-sm">Ta还没有收到评价</div>
+              <div className="flex flex-col items-center justify-center py-16 text-gray-400">
+                <svg className="w-20 h-20 mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                <p className="text-sm font-medium text-gray-500">Ta还没有收到评价</p>
+              </div>
             ) : (
               <div className="space-y-3">
                 {userEvals.map(e => {
@@ -164,8 +192,12 @@ export default function UserProfile() {
                   return (
                     <div key={e.evaluation_id} className="bg-white rounded-xl shadow-sm p-4">
                       <div className="flex items-center gap-3 mb-2">
-                        <Link to={`/user/${e.evaluator_id}`} className="w-9 h-9 rounded-full bg-gray-300 text-white flex items-center justify-center text-xs font-bold hover:opacity-80 transition-opacity">
-                          {evaluator?.name?.[0]}
+                        <Link to={`/user/${e.evaluator_id}`} className="hover:opacity-80 transition-opacity">
+                          <img
+                            src={avatarUrl(e.evaluator_id)}
+                            alt={evaluator?.name}
+                            className="w-9 h-9 rounded-full bg-gray-100"
+                          />
                         </Link>
                         <div>
                           <Link to={`/user/${e.evaluator_id}`} className="text-sm font-medium text-gray-800 hover:text-primary transition-colors">

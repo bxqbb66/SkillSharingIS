@@ -1,9 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { skills, demands, currentUser } from '../data/mockData';
 import { useAuth } from '../data/AuthContext';
+import { avatarUrl } from '../utils/images';
 import SkillCard from '../components/SkillCard';
 import DemandCard from '../components/DemandCard';
+import { CardSkeleton } from '../components/Skeleton';
 
 const categories = ['全部', '学业', '技术', '生活', '文体'];
 
@@ -12,6 +14,7 @@ export default function Home() {
   const navigate = useNavigate();
   const { isLoggedIn, user } = useAuth();
   const myFilter = searchParams.get('my');
+  const [loading, setLoading] = useState(true);
 
   const initialTab = myFilter === 'demands' ? 'demands' : 'skills';
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -19,6 +22,11 @@ export default function Home() {
   const [keyword, setKeyword] = useState('');
 
   const showOnlyMine = !!myFilter;
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
 
   const displayedSkills = useMemo(() => {
     let list = showOnlyMine
@@ -71,9 +79,11 @@ export default function Home() {
           </div>
           {isLoggedIn ? (
             <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
-              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
-                {user?.name?.[0]}
-              </div>
+              <img
+                src={avatarUrl(user?.student_id)}
+                alt={user?.name}
+                className="w-8 h-8 rounded-full bg-gray-100"
+              />
               <span className="text-xs text-gray-700 hidden md:inline">{user?.name}</span>
             </Link>
           ) : (
@@ -153,8 +163,12 @@ export default function Home() {
       </div>
 
       {/* === 卡片列表 === */}
-      <div className="px-4 pb-4 md:px-6 md:pb-6 flex-1">
-        {activeTab === 'skills' ? (
+      <div className="px-4 pb-4 md:px-6 md:pb-6 flex-1 page-enter">
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
+            {[1, 2, 3, 4, 5, 6].map(i => <CardSkeleton key={i} />)}
+          </div>
+        ) : activeTab === 'skills' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
               {displayedSkills.map(skill => (
@@ -163,10 +177,14 @@ export default function Home() {
             </div>
             {displayedSkills.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                <div className="text-4xl mb-3">🔍</div>
-                <p className="text-sm">暂无相关内容</p>
-                <p className="text-xs mt-1">
+                <svg className="w-24 h-24 mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <p className="text-sm font-medium text-gray-500">
                   {keyword ? `未找到与"${keyword}"相关的技能` : '暂无该分类的技能'}
+                </p>
+                <p className="text-xs mt-1 text-gray-400">
+                  {keyword ? '试试其他关键词' : '去发布页面创建第一个技能吧'}
                 </p>
               </div>
             )}
@@ -180,10 +198,14 @@ export default function Home() {
             </div>
             {displayedDemands.length === 0 && (
               <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                <div className="text-4xl mb-3">🔍</div>
-                <p className="text-sm">暂无相关内容</p>
-                <p className="text-xs mt-1">
+                <svg className="w-24 h-24 mb-4 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={0.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <p className="text-sm font-medium text-gray-500">
                   {keyword ? `未找到与"${keyword}"相关的需求` : '暂无该分类的需求'}
+                </p>
+                <p className="text-xs mt-1 text-gray-400">
+                  {keyword ? '试试其他关键词' : '去发布页面发布第一个需求吧'}
                 </p>
               </div>
             )}

@@ -36,7 +36,7 @@ export default function Publish() {
         <p className="text-sm text-gray-500 mb-6">登录后才能发布技能和需求</p>
         <button
           onClick={() => navigate('/login')}
-          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-primary-light transition-colors"
         >
           去登录
         </button>
@@ -362,7 +362,7 @@ export default function Publish() {
         <div className="mt-6 mb-4 md:block">
           <button
             onClick={handleSubmit}
-            className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-blue-700 transition-colors"
+            className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors"
           >
             提交发布
           </button>
@@ -373,7 +373,7 @@ export default function Publish() {
       <div className="md:hidden bg-white border-t border-gray-200 px-4 py-3">
         <button
           onClick={handleSubmit}
-          className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-blue-700 transition-colors"
+          className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors"
         >
           提交发布
         </button>
