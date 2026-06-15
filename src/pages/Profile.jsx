@@ -205,10 +205,12 @@ export default function Profile() {
                   return (
                     <div key={e.evaluation_id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <div className="w-7 h-7 rounded-full bg-gray-300 text-white flex items-center justify-center text-[10px] font-bold">
+                        <Link to={`/user/${evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id}`} className="w-7 h-7 rounded-full bg-gray-300 text-white flex items-center justify-center text-[10px] font-bold hover:opacity-80 transition-opacity">
                           {other?.name?.[0]}
-                        </div>
-                        <span className="text-xs font-medium text-gray-700">{other?.name}</span>
+                        </Link>
+                        <Link to={`/user/${evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id}`} className="text-xs font-medium text-gray-700 hover:text-primary transition-colors">
+                          {other?.name}
+                        </Link>
                         <span className="text-xs text-yellow-500">{'★'.repeat(e.star_score)}{'☆'.repeat(5 - e.star_score)}</span>
                       </div>
                       <p className="text-xs text-gray-500 ml-9">{e.evaluation_text}</p>

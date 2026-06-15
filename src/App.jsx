@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import SkillDetail from './pages/SkillDetail';
 import DemandDetail from './pages/DemandDetail';
 import OrderDetail from './pages/OrderDetail';
+import UserProfile from './pages/UserProfile';
 
 export default function App() {
   return (
@@ -27,6 +28,7 @@ export default function App() {
           <Route path="skill/:id" element={<SkillDetail />} />
           <Route path="demand/:id" element={<DemandDetail />} />
           <Route path="order/:id" element={<OrderDetail />} />
+          <Route path="user/:id" element={<UserProfile />} />
           <Route path="login" element={<Login />} />
         </Routes>
       </BrowserRouter>

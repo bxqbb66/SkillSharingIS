@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getDemandById, getUserById } from '../data/mockData';
 
 const categoryColors = {
@@ -97,7 +97,7 @@ export default function DemandDetail() {
       {/* 右侧：发布者信息 + 操作（桌面端） */}
       <div className="hidden md:block md:w-1/3">
         <div className="bg-white rounded-xl shadow-sm p-6 sticky top-24">
-          <div className="flex items-center gap-3 mb-4">
+          <Link to={`/user/${demand.demander_id}`} className="flex items-center gap-3 mb-4 hover:opacity-80 transition-opacity">
             <div className="w-14 h-14 rounded-full bg-amber-500 text-white flex items-center justify-center text-xl font-bold">
               {demander?.name?.[0]}
             </div>
@@ -109,7 +109,7 @@ export default function DemandDetail() {
                 <span className="text-xs text-gray-400 ml-1">信用 {demander?.credit_score}分</span>
               </div>
             </div>
-          </div>
+          </Link>
           <button
             onClick={() => setShowConfirm(true)}
             className="w-full bg-amber-500 text-white font-medium py-3 rounded-xl text-sm hover:bg-amber-600 transition-colors"
@@ -121,7 +121,7 @@ export default function DemandDetail() {
 
       {/* 手机端底部悬浮操作栏 */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-3 z-10 flex items-center gap-3">
-        <div className="flex items-center gap-2 flex-1">
+        <Link to={`/user/${demand.demander_id}`} className="flex items-center gap-2 flex-1">
           <div className="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center text-sm font-bold shrink-0">
             {demander?.name?.[0]}
           </div>
@@ -129,7 +129,7 @@ export default function DemandDetail() {
             <div className="text-sm font-semibold text-gray-800">{demander?.name}</div>
             <div className="text-xs text-yellow-500">★ {demander?.credit_level}</div>
           </div>
-        </div>
+        </Link>
         <button
           onClick={() => setShowConfirm(true)}
           className="bg-amber-500 text-white font-medium px-8 py-2.5 rounded-full text-sm hover:bg-amber-600 transition-colors"
