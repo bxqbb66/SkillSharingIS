@@ -5,6 +5,8 @@ import Publish from './pages/Publish';
 import Orders from './pages/Orders';
 import Messages from './pages/Messages';
 import Profile from './pages/Profile';
+import SkillDetail from './pages/SkillDetail';
+import DemandDetail from './pages/DemandDetail';
 
 export default function App() {
   return (
@@ -18,6 +20,8 @@ export default function App() {
           <Route path="orders" element={<Orders />} />
           <Route path="profile" element={<Profile />} />
         </Route>
+        <Route path="skill/:id" element={<SkillDetail />} />
+        <Route path="demand/:id" element={<DemandDetail />} />
       </Routes>
     </BrowserRouter>
   );

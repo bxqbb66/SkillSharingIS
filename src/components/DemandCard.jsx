@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { getUserById } from '../data/mockData';
 
 const categoryColors = {
@@ -12,7 +13,10 @@ export default function DemandCard({ demand }) {
   if (!demander) return null;
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow">
+    <Link
+      to={`/demand/${demand.demand_id}`}
+      className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:shadow-md transition-shadow cursor-pointer block"
+    >
       <div className="flex items-start gap-3">
         <div className="w-11 h-11 rounded-full bg-amber-500 text-white flex items-center justify-center text-sm font-bold shrink-0">
           {demander.name[0]}
@@ -34,12 +38,12 @@ export default function DemandCard({ demand }) {
               <span className="text-amber-600 font-bold text-base">¥{demand.budget_amount}</span>
               <span className="text-xs text-gray-400 ml-2">截止 {demand.deadline}</span>
             </div>
-            <button className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-full hover:bg-amber-600 transition-colors">
+            <span className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded-full hover:bg-amber-600 transition-colors inline-block">
               我要接单
-            </button>
+            </span>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
