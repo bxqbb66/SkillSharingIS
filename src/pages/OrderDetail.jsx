@@ -37,8 +37,16 @@ export default function OrderDetail() {
 
   if (!order) {
     return (
-      <div className="flex items-center justify-center min-h-screen text-gray-400">
-        工单不存在
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+        <div className="text-5xl mb-4">🔍</div>
+        <h2 className="text-lg font-bold text-gray-800 mb-2">该工单不存在或已被删除</h2>
+        <p className="text-sm text-gray-500 mb-6">工单 ID：{id}</p>
+        <button
+          onClick={() => navigate('/orders', { replace: true })}
+          className="bg-primary text-white px-6 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          返回我的工单
+        </button>
       </div>
     );
   }
