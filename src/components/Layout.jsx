@@ -1,4 +1,7 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { notifications } from '../data/mockData';
+
+const hasUnread = notifications.some(n => n.unread);
 
 const tabs = [
   { path: '/home', label: '首页', icon: '🏠' },
@@ -24,7 +27,7 @@ export default function Layout() {
               <NavLink
                 key={tab.path}
                 to={tab.path}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors relative ${
                   isActive
                     ? 'bg-white/20 font-semibold'
                     : 'hover:bg-white/10'
@@ -32,6 +35,9 @@ export default function Layout() {
               >
                 <span className="text-lg">{tab.icon}</span>
                 <span>{tab.label}</span>
+                {tab.path === '/messages' && hasUnread && (
+                  <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
+                )}
               </NavLink>
             );
           })}
@@ -52,12 +58,15 @@ export default function Layout() {
               <NavLink
                 key={tab.path}
                 to={tab.path}
-                className={`flex flex-col items-center gap-0.5 text-xs ${
+                className={`flex flex-col items-center gap-0.5 text-xs relative ${
                   isActive ? 'text-primary font-semibold' : 'text-gray-500'
                 }`}
               >
                 <span className="text-lg">{tab.icon}</span>
                 <span>{tab.label}</span>
+                {tab.path === '/messages' && hasUnread && (
+                  <span className="absolute -top-0.5 right-1/4 w-2 h-2 bg-red-500 rounded-full" />
+                )}
               </NavLink>
             );
           })}

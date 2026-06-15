@@ -44,11 +44,74 @@ export const demands = [
 ];
 
 export const orders = [
-  { order_id: 'O001', demand_id: 'D001', skill_id: 'S001', demander_id: '20210001', provider_id: '20210101', reward_amount: 60, agreed_delivery_time: '2026-06-20', actual_delivery_time: '', order_status: '进行中', created_at: '2026-06-10 14:30' },
-  { order_id: 'O002', demand_id: 'D003', skill_id: 'S002', demander_id: '20210001', provider_id: '20210102', reward_amount: 50, agreed_delivery_time: '2026-07-05', actual_delivery_time: '', order_status: '待确认', created_at: '2026-06-12 09:15' },
-  { order_id: 'O003', demand_id: '', skill_id: 'S004', demander_id: '20210001', provider_id: '20210104', reward_amount: 60, agreed_delivery_time: '2026-06-15', actual_delivery_time: '2026-06-14', order_status: '已完成', created_at: '2026-06-08 16:00' },
-  { order_id: 'O004', demand_id: '', skill_id: 'S003', demander_id: '20210001', provider_id: '20210103', reward_amount: 45, agreed_delivery_time: '2026-06-18', actual_delivery_time: '', order_status: '待验收', created_at: '2026-06-13 11:20' },
-  { order_id: 'O005', demand_id: 'D005', skill_id: '', demander_id: '20210001', provider_id: '20210105', reward_amount: 25, agreed_delivery_time: '2026-06-18', actual_delivery_time: '', order_status: '申诉中', created_at: '2026-06-14 08:00' },
+  { order_id: 'O001', demand_id: 'D001', skill_id: 'S001', demander_id: '20210001', provider_id: '20210101', reward_amount: 60, agreed_delivery_time: '2026-06-20', actual_delivery_time: '', order_status: '进行中', created_at: '2026-06-10 14:30', task_description: 'Python数据结构大作业辅导，包括链表、树、图等核心内容', delivery_requirement: '需要完整的Python代码和说明文档，代码注释清晰' },
+  { order_id: 'O002', demand_id: 'D003', skill_id: 'S002', demander_id: '20210001', provider_id: '20210102', reward_amount: 50, agreed_delivery_time: '2026-07-05', actual_delivery_time: '', order_status: '待确认', created_at: '2026-06-12 09:15', task_description: '英语四级备考冲刺，阅读和写作专项辅导', delivery_requirement: '希望能提供学习计划和模拟测试' },
+  { order_id: 'O003', demand_id: '', skill_id: 'S004', demander_id: '20210001', provider_id: '20210104', reward_amount: 60, agreed_delivery_time: '2026-06-15', actual_delivery_time: '2026-06-14', order_status: '已完成', created_at: '2026-06-08 16:00', task_description: '竞赛路演PPT美化设计，约20页', delivery_requirement: '风格现代简约，符合竞赛要求' },
+  { order_id: 'O004', demand_id: '', skill_id: 'S003', demander_id: '20210001', provider_id: '20210103', reward_amount: 45, agreed_delivery_time: '2026-06-18', actual_delivery_time: '', order_status: '待验收', created_at: '2026-06-13 11:20', task_description: '高等数学极限与导数章节辅导', delivery_requirement: '重点讲解洛必达法则和泰勒展开' },
+  { order_id: 'O005', demand_id: 'D005', skill_id: '', demander_id: '20210001', provider_id: '20210105', reward_amount: 25, agreed_delivery_time: '2026-06-18', actual_delivery_time: '', order_status: '申诉中', created_at: '2026-06-14 08:00', task_description: '搬宿舍：南苑5栋搬至北苑3栋', delivery_requirement: '行李搬运，有电梯' },
+];
+
+export const progressLogs = {
+  O001: [
+    { time: '2026-06-10 14:30', title: '工单创建', desc: '需求方下单成功，等待服务方确认' },
+    { time: '2026-06-10 15:00', title: '双方确认', desc: '服务方已确认接单，工单进入进行中状态' },
+    { time: '2026-06-11 10:00', title: '服务方开始执行', desc: '服务方已开始提供服务' },
+  ],
+  O002: [
+    { time: '2026-06-12 09:15', title: '工单创建', desc: '需求方下单成功，等待服务方确认' },
+  ],
+  O003: [
+    { time: '2026-06-08 16:00', title: '工单创建', desc: '需求方下单成功' },
+    { time: '2026-06-08 16:30', title: '双方确认', desc: '服务方确认接单' },
+    { time: '2026-06-10 09:00', title: '服务方开始执行', desc: '服务方开始制作PPT' },
+    { time: '2026-06-13 20:00', title: '服务方提交成果', desc: 'PPT初稿提交，等待需求方审核' },
+    { time: '2026-06-14 10:00', title: '需求方验收通过', desc: '需求方确认验收，报酬已结算' },
+    { time: '2026-06-14 14:00', title: '双方互评完成', desc: '双方已完成评价，信用分已更新' },
+  ],
+  O004: [
+    { time: '2026-06-13 11:20', title: '工单创建', desc: '需求方下单成功' },
+    { time: '2026-06-13 12:00', title: '双方确认', desc: '服务方确认接单' },
+    { time: '2026-06-14 09:00', title: '服务方开始执行', desc: '服务方开始辅导' },
+    { time: '2026-06-15 18:00', title: '服务方提交成果', desc: '辅导完成，提交辅导总结，等待验收' },
+  ],
+  O005: [
+    { time: '2026-06-14 08:00', title: '工单创建', desc: '需求方下单成功' },
+    { time: '2026-06-14 08:30', title: '双方确认', desc: '服务方确认接单' },
+    { time: '2026-06-15 12:00', title: '服务方提交成果', desc: '服务方声称已完成搬运' },
+    { time: '2026-06-15 13:00', title: '需求方发起申诉', desc: '需求方认为行李有损坏，发起申诉' },
+  ],
+};
+
+export const chatContacts = [
+  { contact_id: '20210101', last_message: '好的，那我们定在周五下午3点开始？', last_time: '14:30', unread: 2 },
+  { contact_id: '20210102', last_message: '四级阅读的真题我已经发给你了', last_time: '昨天', unread: 0 },
+  { contact_id: '20210104', last_message: 'PPT初稿已经完成，请查看', last_time: '周一', unread: 0 },
+  { contact_id: '20210103', last_message: '洛必达法则这块需要多练几道题', last_time: '6月13日', unread: 0 },
+  { contact_id: '20210105', last_message: '明天下午我们来搬，行吗？', last_time: '6月14日', unread: 1 },
+];
+
+export const chatMessages = {
+  '20210101': [
+    { from: '20210101', text: '你好，看到你下单了Python辅导', time: '14:00' },
+    { from: '20210001', text: '是的！我数据结构大作业需要帮忙', time: '14:05' },
+    { from: '20210101', text: '没问题，你先说说具体需要辅导哪些内容？', time: '14:10' },
+    { from: '20210001', text: '主要是链表和二叉树部分，还有图的遍历', time: '14:20' },
+    { from: '20210101', text: '好的，那我们定在周五下午3点开始？', time: '14:30' },
+  ],
+  '20210102': [
+    { from: '20210102', text: '同学你好，我是负责英语辅导的李婷', time: '09:00' },
+    { from: '20210001', text: '你好！我四级阅读比较薄弱', time: '09:10' },
+    { from: '20210102', text: '四级阅读的真题我已经发给你了', time: '09:15' },
+  ],
+};
+
+export const notifications = [
+  { id: 1, text: '系统通知：您的需求"Python作业辅导"已被接单', time: '2026-06-10 15:00', unread: true },
+  { id: 2, text: '系统通知：您有一笔报酬 ¥60.00 已冻结，待服务完成', time: '2026-06-10 15:01', unread: true },
+  { id: 3, text: '系统通知：工单 O003 已完成，报酬 ¥60.00 已到账', time: '2026-06-14 10:00', unread: false },
+  { id: 4, text: '系统通知：您的信用分已更新，当前 650 分', time: '2026-06-14 14:00', unread: false },
+  { id: 5, text: '系统通知：服务方已提交成果，请及时验收工单 O004', time: '2026-06-15 18:00', unread: true },
+  { id: 6, text: '系统通知：工单 O005 已进入申诉流程，平台将介入处理', time: '2026-06-15 13:00', unread: false },
 ];
 
 export function getUserById(studentId) {
