@@ -1,7 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { notifications } from '../data/mockData';
-
-const hasUnread = notifications.some(n => n.unread);
+import { useStore } from '../data/store';
 
 const tabs = [
   { path: '/home', label: '首页', icon: '🏠' },
@@ -12,6 +10,8 @@ const tabs = [
 
 export default function Layout() {
   const location = useLocation();
+  const store = useStore();
+  const unread = store.hasUnread();
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -35,7 +35,7 @@ export default function Layout() {
               >
                 <span className="text-lg">{tab.icon}</span>
                 <span>{tab.label}</span>
-                {tab.path === '/messages' && hasUnread && (
+                {tab.path === '/messages' && unread && (
                   <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full" />
                 )}
               </NavLink>
@@ -64,7 +64,7 @@ export default function Layout() {
               >
                 <span className="text-lg">{tab.icon}</span>
                 <span>{tab.label}</span>
-                {tab.path === '/messages' && hasUnread && (
+                {tab.path === '/messages' && unread && (
                   <span className="absolute -top-0.5 right-1/4 w-2 h-2 bg-red-500 rounded-full" />
                 )}
               </NavLink>

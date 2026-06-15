@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getSkillById, getUserById } from '../data/mockData';
+import { useStore } from '../data/store';
 
 const categoryColors = {
   '学业': 'bg-blue-50 text-blue-700',
@@ -12,6 +13,7 @@ const categoryColors = {
 export default function SkillDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const store = useStore();
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
 
@@ -25,13 +27,12 @@ export default function SkillDetail() {
   }
 
   const provider = getUserById(skill.provider_id);
+  const providerEvals = store.getEvaluationsForUser(skill.provider_id);
 
   function handleConfirm() {
     setShowConfirm(false);
     setConfirmed(true);
-    setTimeout(() => {
-      navigate('/orders');
-    }, 1200);
+    setTimeout(() => navigate('/orders'), 1200);
   }
 
   if (confirmed) {
@@ -50,8 +51,15 @@ export default function SkillDetail() {
     <div className="min-h-screen flex flex-col md:flex-row md:gap-6 md:p-6 md:max-w-5xl md:mx-auto">
       {/* 左侧：详情内容 */}
       <div className="flex-1 md:w-2/3">
-        {/* 顶部标签区 */}
+        {/* 返回按钮 + 顶部标签区 */}
         <div className="bg-white px-4 py-4 md:rounded-xl md:shadow-sm">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-primary mb-3 transition-colors"
+          >
+            <span className="text-lg leading-none">‹</span>
+            <span>返回</span>
+          </button>
           <div className="flex items-center gap-2 flex-wrap mb-3">
             <span className="text-lg font-bold text-gray-800">{skill.skill_tag}</span>
             <span className={`text-xs px-2 py-0.5 rounded ${categoryColors[skill.skill_category] || 'bg-gray-100 text-gray-600'}`}>
@@ -65,19 +73,16 @@ export default function SkillDetail() {
           </div>
         </div>
 
-        {/* 可服务时间 */}
         <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">可服务时间</h3>
           <p className="text-sm text-gray-600">{skill.available_time || '未设置'}</p>
         </div>
 
-        {/* 技能描述 */}
         <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-2">技能描述</h3>
           <p className="text-sm text-gray-600 leading-relaxed">{skill.skill_description}</p>
         </div>
 
-        {/* 资质信息 */}
         {skill.qualification_info && (
           <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
             <h3 className="text-sm font-semibold text-gray-700 mb-2">资质信息</h3>
@@ -85,7 +90,6 @@ export default function SkillDetail() {
           </div>
         )}
 
-        {/* 作品展示 */}
         <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
           <h3 className="text-sm font-semibold text-gray-700 mb-3">作品展示</h3>
           <div className="grid grid-cols-3 gap-2">
@@ -96,6 +100,32 @@ export default function SkillDetail() {
             ))}
           </div>
         </div>
+
+        {/* 历史评价 */}
+        {providerEvals.length > 0 && (
+          <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3">
+              历史评价（{providerEvals.length}）
+            </h3>
+            <div className="space-y-3">
+              {providerEvals.map(e => {
+                const evaluator = getUserById(e.evaluator_id);
+                return (
+                  <div key={e.evaluation_id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className="w-7 h-7 rounded-full bg-gray-300 text-white flex items-center justify-center text-[10px] font-bold">
+                        {evaluator?.name?.[0]}
+                      </div>
+                      <span className="text-xs font-medium text-gray-700">{evaluator?.name}</span>
+                      <span className="text-xs text-yellow-500">{'★'.repeat(e.star_score)}{'☆'.repeat(5 - e.star_score)}</span>
+                    </div>
+                    <p className="text-xs text-gray-500 ml-9">{e.evaluation_text}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* 右侧：发布者信息 + 操作（桌面端） */}
@@ -142,31 +172,19 @@ export default function SkillDetail() {
         </button>
       </div>
 
-      {/* 确认弹窗 */}
       {showConfirm && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
             <h3 className="text-lg font-bold text-gray-800 mb-2">确认预约</h3>
             <p className="text-sm text-gray-500 mb-6">确认要预约此项技能服务吗？确认后将生成工单。</p>
             <div className="flex gap-3">
-              <button
-                onClick={() => setShowConfirm(false)}
-                className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
-              >
-                取消
-              </button>
-              <button
-                onClick={handleConfirm}
-                className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                确认预约
-              </button>
+              <button onClick={() => setShowConfirm(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
+              <button onClick={handleConfirm} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-700 transition-colors">确认预约</button>
             </div>
           </div>
         </div>
       )}
 
-      {/* 手机端底部占位 */}
       <div className="md:hidden h-16" />
     </div>
   );

@@ -1,11 +1,16 @@
 import { useState } from 'react';
-import { chatContacts, chatMessages, notifications, getUserById, currentUser } from '../data/mockData';
+import { chatMessages, getUserById, currentUser } from '../data/mockData';
+import { useStore } from '../data/store';
 
 export default function Messages() {
+  const store = useStore();
   const [tab, setTab] = useState('chat');
   const [activeChat, setActiveChat] = useState(null);
   const [inputText, setInputText] = useState('');
   const [localMessages, setLocalMessages] = useState({});
+
+  const contacts = store.getContacts();
+  const notifs = store.getNotifications();
 
   const contact = activeChat ? getUserById(activeChat) : null;
   const msgs = activeChat
@@ -21,6 +26,11 @@ export default function Messages() {
       [key]: [...prev, { from: currentUser.student_id, text: inputText.trim(), time: '刚刚' }],
     });
     setInputText('');
+  }
+
+  function handleOpenChat(contactId) {
+    store.markContactRead(contactId);
+    setActiveChat(contactId);
   }
 
   // Chat list view
@@ -45,7 +55,7 @@ export default function Messages() {
               }`}
             >
               系统通知
-              {notifications.some(n => n.unread) && (
+              {notifs.some(n => n.unread) && (
                 <span className="absolute top-2 right-1/4 w-2 h-2 bg-red-500 rounded-full" />
               )}
             </button>
@@ -55,13 +65,13 @@ export default function Messages() {
         {/* 聊天列表 */}
         {tab === 'chat' && (
           <div className="flex-1">
-            {chatContacts.map(c => {
+            {contacts.map(c => {
               const user = getUserById(c.contact_id);
               if (!user) return null;
               return (
                 <button
                   key={c.contact_id}
-                  onClick={() => setActiveChat(c.contact_id)}
+                  onClick={() => handleOpenChat(c.contact_id)}
                   className="w-full flex items-center gap-3 px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors text-left"
                 >
                   <div className="relative">
@@ -90,10 +100,11 @@ export default function Messages() {
         {/* 系统通知列表 */}
         {tab === 'notify' && (
           <div className="flex-1">
-            {notifications.map(n => (
-              <div
+            {notifs.map(n => (
+              <button
                 key={n.id}
-                className={`flex items-start gap-3 px-4 py-3 border-b border-gray-50 ${
+                onClick={() => store.markNotifRead(n.id)}
+                className={`w-full text-left flex items-start gap-3 px-4 py-3 border-b border-gray-50 ${
                   n.unread ? 'bg-blue-50/50' : ''
                 }`}
               >
@@ -104,7 +115,7 @@ export default function Messages() {
                   <p className="text-sm text-gray-700">{n.text}</p>
                   <p className="text-xs text-gray-400 mt-1">{n.time}</p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         )}
@@ -137,7 +148,7 @@ export default function Messages() {
         {msgs.map((msg, i) => {
           const isMe = msg.from === currentUser.student_id;
           return (
-            <div key={i} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+            <div key={i} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${
                 isMe
                   ? 'bg-primary text-white rounded-br-md'
@@ -145,9 +156,7 @@ export default function Messages() {
               }`}>
                 {msg.text}
               </div>
-              <div className={`text-[10px] text-gray-400 mt-1 ${isMe ? 'text-right mr-1' : 'ml-1'}`}>
-                {msg.time}
-              </div>
+              <span className="text-[10px] text-gray-400 mt-0.5 px-1">{msg.time}</span>
             </div>
           );
         })}

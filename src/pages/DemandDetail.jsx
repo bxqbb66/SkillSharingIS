@@ -52,6 +52,13 @@ export default function DemandDetail() {
       <div className="flex-1 md:w-2/3">
         {/* 顶部标签区 */}
         <div className="bg-white px-4 py-4 md:rounded-xl md:shadow-sm">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-primary mb-3 transition-colors"
+          >
+            <span className="text-lg leading-none">‹</span>
+            <span>返回</span>
+          </button>
           <div className="flex items-center gap-2 flex-wrap mb-3">
             <span className="text-lg font-bold text-gray-800">{demand.demand_tag}</span>
             {demand.urgent_flag === 1 && (

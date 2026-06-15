@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { currentUser, orders, skills, demands } from '../data/mockData';
+import { currentUser, orders, skills, demands, getUserById } from '../data/mockData';
+import { useStore } from '../data/store';
 
 const statusColors = {
   '待确认': 'bg-orange-100 text-orange-700',
@@ -19,10 +20,10 @@ const levelBadge = {
 };
 
 const quickLinks = [
-  { icon: '📦', label: '我发布的技能', path: '/home' },
-  { icon: '📝', label: '我发布的需求', path: '/home' },
+  { icon: '📦', label: '我发布的技能', path: '/home?my=skills' },
+  { icon: '📝', label: '我发布的需求', path: '/home?my=demands' },
   { icon: '📋', label: '我的工单', path: '/orders' },
-  { icon: '⭐', label: '我的评价', path: '/profile' },
+  { icon: '⭐', label: '我的评价', action: 'evals' },
   { icon: '📊', label: '信用明细', path: '/profile' },
   { icon: '⚙️', label: '设置', path: '/profile' },
 ];
@@ -30,8 +31,13 @@ const quickLinks = [
 export default function Profile() {
   const [isLoggedIn] = useState(true);
   const [orderFilter, setOrderFilter] = useState('全部');
+  const [showEvals, setShowEvals] = useState(false);
+  const [evalTab, setEvalTab] = useState('aboutMe');
+  const store = useStore();
   const mySkills = skills.filter(s => s.provider_id === currentUser.student_id);
   const myDemands = demands.filter(d => d.demander_id === currentUser.student_id);
+  const { byMe, aboutMe } = store.getMyEvals(currentUser.student_id);
+  const currentEvals = evalTab === 'byMe' ? byMe : aboutMe;
 
   const filteredOrders = orderFilter === '全部'
     ? orders
@@ -124,18 +130,84 @@ export default function Profile() {
         {/* 快捷功能入口 */}
         <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
           <div className="grid grid-cols-3 gap-3">
-            {quickLinks.map(link => (
-              <Link
-                key={link.label}
-                to={link.path}
-                className="flex flex-col items-center gap-1.5 py-3 hover:bg-gray-50 rounded-lg transition-colors"
-              >
-                <span className="text-2xl">{link.icon}</span>
-                <span className="text-xs text-gray-600">{link.label}</span>
-              </Link>
-            ))}
+            {quickLinks.map(link =>
+              link.action === 'evals' ? (
+                <button
+                  key={link.label}
+                  onClick={() => setShowEvals(true)}
+                  className="flex flex-col items-center gap-1.5 py-3 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl">{link.icon}</span>
+                  <span className="text-xs text-gray-600">{link.label}</span>
+                </button>
+              ) : (
+                <Link
+                  key={link.label}
+                  to={link.path}
+                  className="flex flex-col items-center gap-1.5 py-3 hover:bg-gray-50 rounded-lg transition-colors"
+                >
+                  <span className="text-2xl">{link.icon}</span>
+                  <span className="text-xs text-gray-600">{link.label}</span>
+                </Link>
+              )
+            )}
           </div>
         </div>
+
+        {/* 我的评价区域 */}
+        {showEvals && (
+          <div className="bg-white mt-2 px-4 py-4 md:rounded-xl md:shadow-sm md:mt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-semibold text-gray-700">我的评价</h3>
+              <button
+                onClick={() => setShowEvals(false)}
+                className="text-xs text-gray-400 hover:text-gray-600"
+              >
+                关闭
+              </button>
+            </div>
+            <div className="flex gap-2 mb-3">
+              <button
+                onClick={() => setEvalTab('aboutMe')}
+                className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+                  evalTab === 'aboutMe' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                别人评价我的 ({aboutMe.length})
+              </button>
+              <button
+                onClick={() => setEvalTab('byMe')}
+                className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+                  evalTab === 'byMe' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                我评价别人的 ({byMe.length})
+              </button>
+            </div>
+            {currentEvals.length === 0 ? (
+              <div className="text-center py-6 text-gray-400 text-sm">暂无评价</div>
+            ) : (
+              <div className="space-y-3">
+                {currentEvals.map(e => {
+                  const other = getUserById(evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id);
+                  return (
+                    <div key={e.evaluation_id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <div className="w-7 h-7 rounded-full bg-gray-300 text-white flex items-center justify-center text-[10px] font-bold">
+                          {other?.name?.[0]}
+                        </div>
+                        <span className="text-xs font-medium text-gray-700">{other?.name}</span>
+                        <span className="text-xs text-yellow-500">{'★'.repeat(e.star_score)}{'☆'.repeat(5 - e.star_score)}</span>
+                      </div>
+                      <p className="text-xs text-gray-500 ml-9">{e.evaluation_text}</p>
+                      <p className="text-[10px] text-gray-300 ml-9 mt-0.5">{e.created_at}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 工单筛选 Tab */}
         <div className="bg-white mt-2 px-4 pt-4 pb-2 md:rounded-xl md:shadow-sm md:mt-4">

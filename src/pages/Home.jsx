@@ -1,21 +1,35 @@
 import { useState } from 'react';
-import { skills, demands } from '../data/mockData';
+import { useSearchParams } from 'react-router-dom';
+import { skills, demands, currentUser } from '../data/mockData';
 import SkillCard from '../components/SkillCard';
 import DemandCard from '../components/DemandCard';
 
 const categories = ['全部', '学业', '技术', '生活', '文体'];
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('skills');
+  const [searchParams] = useSearchParams();
+  const myFilter = searchParams.get('my');
+
+  const initialTab = myFilter === 'demands' ? 'demands' : 'skills';
+  const [activeTab, setActiveTab] = useState(initialTab);
   const [activeCategory, setActiveCategory] = useState('全部');
 
+  const showOnlyMine = !!myFilter;
+
+  let baseSkills = showOnlyMine
+    ? skills.filter(s => s.provider_id === currentUser.student_id)
+    : skills;
+  let baseDemands = showOnlyMine
+    ? demands.filter(d => d.demander_id === currentUser.student_id)
+    : demands;
+
   const filteredSkills = activeCategory === '全部'
-    ? skills
-    : skills.filter(s => s.skill_category === activeCategory);
+    ? baseSkills
+    : baseSkills.filter(s => s.skill_category === activeCategory);
 
   const filteredDemands = activeCategory === '全部'
-    ? demands
-    : demands.filter(d => d.service_type === activeCategory);
+    ? baseDemands
+    : baseDemands.filter(d => d.service_type === activeCategory);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -42,7 +56,7 @@ export default function Home() {
 
       {/* === 技能/需求 Tab 切换 === */}
       <div className="bg-white border-b border-gray-100">
-        <div className="flex px-4 md:px-6">
+        <div className="flex px-4 md:px-6 items-center">
           <button
             onClick={() => setActiveTab('skills')}
             className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
@@ -51,7 +65,7 @@ export default function Home() {
                 : 'text-gray-500 border-transparent hover:text-gray-700'
             }`}
           >
-            技能广场
+            {showOnlyMine ? '我的技能' : '技能广场'}
           </button>
           <button
             onClick={() => setActiveTab('demands')}
@@ -61,7 +75,7 @@ export default function Home() {
                 : 'text-gray-500 border-transparent hover:text-gray-700'
             }`}
           >
-            需求广场
+            {showOnlyMine ? '我的需求' : '需求广场'}
           </button>
         </div>
       </div>
