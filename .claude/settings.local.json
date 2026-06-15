@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx *)",
+      "Bash(cd /tmp)",
+      "Bash(rm -rf skillsharing-scaffold)",
+      "Bash(cp /tmp/skillsharing-scaffold/.gitignore \"D:\\\\programs\\\\SkillSharingIS\\\\.gitignore\")",
+      "Bash(cp /tmp/skillsharing-scaffold/index.html \"D:\\\\programs\\\\SkillSharingIS\\\\index.html\")",
+      "Bash(cp /tmp/skillsharing-scaffold/package.json \"D:\\\\programs\\\\SkillSharingIS\\\\package.json\")",
+      "Bash(cp /tmp/skillsharing-scaffold/vite.config.js \"D:\\\\programs\\\\SkillSharingIS\\\\vite.config.js\")",
+      "Bash(cp /tmp/skillsharing-scaffold/eslint.config.js \"D:\\\\programs\\\\SkillSharingIS\\\\eslint.config.js\")",
+      "Bash(npm install *)",
+      "Bash(npm ls *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)",
+      "Bash(git init *)",
+      "Bash(git add *)"
+    ]
+  }
+}
