@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { skills, demands, currentUser } from '../data/mockData';
+import { useAuth } from '../data/AuthContext';
 import SkillCard from '../components/SkillCard';
 import DemandCard from '../components/DemandCard';
 
@@ -8,35 +9,56 @@ const categories = ['全部', '学业', '技术', '生活', '文体'];
 
 export default function Home() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
   const myFilter = searchParams.get('my');
 
   const initialTab = myFilter === 'demands' ? 'demands' : 'skills';
   const [activeTab, setActiveTab] = useState(initialTab);
   const [activeCategory, setActiveCategory] = useState('全部');
+  const [keyword, setKeyword] = useState('');
 
   const showOnlyMine = !!myFilter;
 
-  let baseSkills = showOnlyMine
-    ? skills.filter(s => s.provider_id === currentUser.student_id)
-    : skills;
-  let baseDemands = showOnlyMine
-    ? demands.filter(d => d.demander_id === currentUser.student_id)
-    : demands;
+  const displayedSkills = useMemo(() => {
+    let list = showOnlyMine
+      ? skills.filter(s => s.provider_id === currentUser.student_id)
+      : skills;
+    if (activeCategory !== '全部') {
+      list = list.filter(s => s.skill_category === activeCategory);
+    }
+    if (keyword.trim()) {
+      const kw = keyword.trim().toLowerCase();
+      list = list.filter(s => s.skill_tag.toLowerCase().includes(kw));
+    }
+    return list;
+  }, [activeCategory, keyword, showOnlyMine]);
 
-  const filteredSkills = activeCategory === '全部'
-    ? baseSkills
-    : baseSkills.filter(s => s.skill_category === activeCategory);
+  const displayedDemands = useMemo(() => {
+    let list = showOnlyMine
+      ? demands.filter(d => d.demander_id === currentUser.student_id)
+      : demands;
+    if (activeCategory !== '全部') {
+      list = list.filter(d => d.service_type === activeCategory);
+    }
+    if (keyword.trim()) {
+      const kw = keyword.trim().toLowerCase();
+      list = list.filter(d => d.demand_tag.toLowerCase().includes(kw));
+    }
+    return list;
+  }, [activeCategory, keyword, showOnlyMine]);
 
-  const filteredDemands = activeCategory === '全部'
-    ? baseDemands
-    : baseDemands.filter(d => d.service_type === activeCategory);
+  function handleTabChange(tab) {
+    setActiveTab(tab);
+    setActiveCategory('全部');
+    setKeyword('');
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
       {/* === 顶部导航栏 === */}
       <header className="sticky top-0 z-10 bg-white border-b border-gray-200 shadow-sm">
         <div className="flex items-center justify-between px-4 py-2.5 md:px-6 md:py-3">
-          {/* 左侧：校徽 + 名称 */}
           <div className="flex items-center gap-2">
             <img
               src="/jlu-logo.png"
@@ -47,18 +69,51 @@ export default function Home() {
               吉大互助
             </span>
           </div>
-          {/* 右侧：登录/注册 */}
-          <button className="text-xs md:text-sm text-primary border border-primary px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors">
-            登录 / 注册
-          </button>
+          {isLoggedIn ? (
+            <Link to="/profile" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+              <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">
+                {user?.name?.[0]}
+              </div>
+              <span className="text-xs text-gray-700 hidden md:inline">{user?.name}</span>
+            </Link>
+          ) : (
+            <button
+              onClick={() => navigate('/login')}
+              className="text-xs md:text-sm text-primary border border-primary px-3 py-1.5 rounded-full hover:bg-primary hover:text-white transition-colors"
+            >
+              登录 / 注册
+            </button>
+          )}
         </div>
       </header>
+
+      {/* === 搜索框 === */}
+      <div className="bg-white px-4 py-2.5 md:px-6">
+        <div className="relative">
+          <input
+            type="text"
+            placeholder={activeTab === 'skills' ? '搜索技能标签，如：PPT、高数...' : '搜索需求标签，如：修电脑、搬家...'}
+            value={keyword}
+            onChange={e => setKeyword(e.target.value)}
+            className="w-full bg-gray-100 rounded-lg pl-9 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:bg-white"
+          />
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">🔍</span>
+          {keyword && (
+            <button
+              onClick={() => setKeyword('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      </div>
 
       {/* === 技能/需求 Tab 切换 === */}
       <div className="bg-white border-b border-gray-100">
         <div className="flex px-4 md:px-6 items-center">
           <button
-            onClick={() => setActiveTab('skills')}
+            onClick={() => handleTabChange('skills')}
             className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'skills'
                 ? 'text-primary border-primary'
@@ -68,7 +123,7 @@ export default function Home() {
             {showOnlyMine ? '我的技能' : '技能广场'}
           </button>
           <button
-            onClick={() => setActiveTab('demands')}
+            onClick={() => handleTabChange('demands')}
             className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'demands'
                 ? 'text-primary border-primary'
@@ -88,7 +143,7 @@ export default function Home() {
             onClick={() => setActiveCategory(cat)}
             className={`text-xs md:text-sm px-3 py-1.5 rounded-full whitespace-nowrap transition-colors ${
               activeCategory === cat
-                ? 'bg-primary text-white'
+                ? 'bg-primary text-white font-medium'
                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
@@ -102,23 +157,35 @@ export default function Home() {
         {activeTab === 'skills' ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              {filteredSkills.map(skill => (
+              {displayedSkills.map(skill => (
                 <SkillCard key={skill.skill_id} skill={skill} />
               ))}
             </div>
-            {filteredSkills.length === 0 && (
-              <div className="text-center py-20 text-gray-400">暂无该分类的技能</div>
+            {displayedSkills.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                <div className="text-4xl mb-3">🔍</div>
+                <p className="text-sm">暂无相关内容</p>
+                <p className="text-xs mt-1">
+                  {keyword ? `未找到与"${keyword}"相关的技能` : '暂无该分类的技能'}
+                </p>
+              </div>
             )}
           </>
         ) : (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4">
-              {filteredDemands.map(demand => (
+              {displayedDemands.map(demand => (
                 <DemandCard key={demand.demand_id} demand={demand} />
               ))}
             </div>
-            {filteredDemands.length === 0 && (
-              <div className="text-center py-20 text-gray-400">暂无该分类的需求</div>
+            {displayedDemands.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                <div className="text-4xl mb-3">🔍</div>
+                <p className="text-sm">暂无相关内容</p>
+                <p className="text-xs mt-1">
+                  {keyword ? `未找到与"${keyword}"相关的需求` : '暂无该分类的需求'}
+                </p>
+              </div>
             )}
           </>
         )}

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../data/AuthContext';
 
 const categories = ['学业辅导', '技术服务', '生活服务', '文体服务'];
 
@@ -24,7 +25,24 @@ const initDemand = {
 
 export default function Publish() {
   const navigate = useNavigate();
+  const { isLoggedIn } = useAuth();
   const [tab, setTab] = useState('skill');
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+        <div className="text-5xl mb-4">🔒</div>
+        <h2 className="text-lg font-bold text-gray-800 mb-2">请先登录</h2>
+        <p className="text-sm text-gray-500 mb-6">登录后才能发布技能和需求</p>
+        <button
+          onClick={() => navigate('/login')}
+          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
+          去登录
+        </button>
+      </div>
+    );
+  }
   const [skill, setSkill] = useState(initSkill);
   const [demand, setDemand] = useState(initDemand);
   const [errors, setErrors] = useState({});

@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { currentUser, orders, skills, demands, getUserById } from '../data/mockData';
+import { Link, useNavigate } from 'react-router-dom';
+import { orders, skills, demands, getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
+import { useAuth } from '../data/AuthContext';
 
 const statusColors = {
   '待确认': 'bg-orange-100 text-orange-700',
@@ -29,14 +30,15 @@ const quickLinks = [
 ];
 
 export default function Profile() {
-  const [isLoggedIn] = useState(true);
+  const navigate = useNavigate();
+  const { isLoggedIn, user, logout } = useAuth();
   const [orderFilter, setOrderFilter] = useState('全部');
   const [showEvals, setShowEvals] = useState(false);
   const [evalTab, setEvalTab] = useState('aboutMe');
   const store = useStore();
-  const mySkills = skills.filter(s => s.provider_id === currentUser.student_id);
-  const myDemands = demands.filter(d => d.demander_id === currentUser.student_id);
-  const { byMe, aboutMe } = store.getMyEvals(currentUser.student_id);
+  const mySkills = user ? skills.filter(s => s.provider_id === user.student_id) : [];
+  const myDemands = user ? demands.filter(d => d.demander_id === user.student_id) : [];
+  const { byMe, aboutMe } = user ? store.getMyEvals(user.student_id) : { byMe: [], aboutMe: [] };
   const currentEvals = evalTab === 'byMe' ? byMe : aboutMe;
 
   const filteredOrders = orderFilter === '全部'
@@ -49,7 +51,10 @@ export default function Profile() {
         <div className="text-6xl mb-4">👤</div>
         <h2 className="text-lg font-bold text-gray-800 mb-2">请先登录</h2>
         <p className="text-sm text-gray-500 mb-6">登录后可查看个人信息和工单</p>
-        <button className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors">
+        <button
+          onClick={() => navigate('/login')}
+          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-blue-700 transition-colors"
+        >
           登录 / 注册
         </button>
       </div>
@@ -65,12 +70,12 @@ export default function Profile() {
           <div className="bg-primary text-white px-4 py-6 md:rounded-t-xl">
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center text-2xl font-bold border-2 border-white/40">
-                {currentUser.name[0]}
+                {user.name[0]}
               </div>
               <div>
-                <div className="text-lg font-bold">{currentUser.name}</div>
-                <div className="text-sm text-white/80 mt-0.5">{currentUser.college}</div>
-                <div className="text-xs text-white/60 mt-0.5">学号：{currentUser.student_id}</div>
+                <div className="text-lg font-bold">{user.name}</div>
+                <div className="text-sm text-white/80 mt-0.5">{user.college}</div>
+                <div className="text-xs text-white/60 mt-0.5">学号：{user.student_id}</div>
               </div>
             </div>
           </div>
@@ -81,10 +86,10 @@ export default function Profile() {
             <div className="flex items-center justify-between bg-gray-50 rounded-lg p-4">
               <div>
                 <div className="text-xs text-gray-500 mb-1">信用分</div>
-                <div className="text-2xl font-bold text-gray-800">{currentUser.credit_score}</div>
+                <div className="text-2xl font-bold text-gray-800">{user.credit_score}</div>
               </div>
-              <div className={`w-12 h-12 rounded-full ${levelBadge[currentUser.credit_level] || 'bg-gray-400'} flex items-center justify-center text-white text-lg font-bold`}>
-                {currentUser.credit_level}
+              <div className={`w-12 h-12 rounded-full ${levelBadge[user.credit_level] || 'bg-gray-400'} flex items-center justify-center text-white text-lg font-bold`}>
+                {user.credit_level}
               </div>
             </div>
 
@@ -92,17 +97,24 @@ export default function Profile() {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">账户余额</span>
-                <span className="font-semibold text-gray-800">¥{currentUser.balance.toFixed(2)}</span>
+                <span className="font-semibold text-gray-800">¥{user.balance.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">积分余额</span>
-                <span className="font-semibold text-gray-800">{currentUser.points_balance}</span>
+                <span className="font-semibold text-gray-800">{user.points_balance}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-500">冻结金额</span>
-                <span className="text-gray-400 text-xs">¥{currentUser.frozen_amount.toFixed(2)} 冻结中</span>
+                <span className="text-gray-400 text-xs">¥{user.frozen_amount.toFixed(2)} 冻结中</span>
               </div>
             </div>
+
+            <button
+              onClick={logout}
+              className="w-full text-center text-xs text-gray-400 hover:text-red-500 py-2 transition-colors"
+            >
+              退出登录
+            </button>
           </div>
         </div>
       </div>
