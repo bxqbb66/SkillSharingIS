@@ -7,6 +7,7 @@ import Messages from './pages/Messages';
 import Profile from './pages/Profile';
 import SkillDetail from './pages/SkillDetail';
 import DemandDetail from './pages/DemandDetail';
+import OrderDetail from './pages/OrderDetail';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         </Route>
         <Route path="skill/:id" element={<SkillDetail />} />
         <Route path="demand/:id" element={<DemandDetail />} />
+        <Route path="order/:id" element={<OrderDetail />} />
       </Routes>
     </BrowserRouter>
   );

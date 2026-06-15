@@ -9,6 +9,20 @@ export const users = [
   { student_id: '20210108', name: '周杰', college: '软件学院', phone: '13800001008', real_name_status: 1, credit_score: 96, credit_level: 'A', balance: 420.00, points_balance: 90, frozen_amount: 0 },
 ];
 
+// 当前登录用户
+export const currentUser = {
+  student_id: '20210001',
+  name: '林小吉',
+  college: '计算机科学与技术学院',
+  phone: '13800000001',
+  real_name_status: 1,
+  credit_score: 650,
+  credit_level: 'A',
+  balance: 120.50,
+  points_balance: 300,
+  frozen_amount: 30.00,
+};
+
 export const skills = [
   { skill_id: 'S001', provider_id: '20210101', skill_tag: 'Python编程', skill_category: '技术', service_price: 50, available_time: '周一至周五 18:00-21:00', skill_description: 'Python基础教学，包括数据结构、算法入门，适合大一、大二同学', qualification_info: '计算机竞赛省级一等奖, ACM校队成员', audit_status: 1, skill_status: 0 },
   { skill_id: 'S002', provider_id: '20210102', skill_tag: '英语口语', skill_category: '学业', service_price: 40, available_time: '周末全天', skill_description: '英语口语陪练，四六级备考辅导，发音纠正', qualification_info: '英语六级620分, 英语演讲比赛冠军', audit_status: 1, skill_status: 0 },
@@ -27,6 +41,14 @@ export const demands = [
   { demand_id: 'D004', demander_id: '20210107', demand_tag: '吉他教学', service_type: '文体', task_description: '零基础想学吉他，希望有耐心的同学教我入门，每周1-2次', budget_amount: 40, deadline: '2026-07-15', delivery_requirement: '自带吉他，能在学期末学会弹唱2-3首歌', urgent_flag: 0, audit_status: 1, demand_status: 0 },
   { demand_id: 'D005', demander_id: '20210105', demand_tag: '搬宿舍帮忙', service_type: '生活', task_description: '下周搬宿舍，需要1-2位同学帮忙搬运行李，大概2小时', budget_amount: 25, deadline: '2026-06-18', delivery_requirement: '行李从南苑5栋搬至北苑3栋，有电梯', urgent_flag: 1, audit_status: 1, demand_status: 0 },
   { demand_id: 'D006', demander_id: '20210102', demand_tag: '考研数学答疑', service_type: '学业', task_description: '考研数学一复习中，需要答疑和解题技巧指导，每周1次', budget_amount: 70, deadline: '2026-07-20', delivery_requirement: '能覆盖高数、线代、概率论三大板块', urgent_flag: 0, audit_status: 1, demand_status: 1 },
+];
+
+export const orders = [
+  { order_id: 'O001', demand_id: 'D001', skill_id: 'S001', demander_id: '20210001', provider_id: '20210101', reward_amount: 60, agreed_delivery_time: '2026-06-20', actual_delivery_time: '', order_status: '进行中', created_at: '2026-06-10 14:30' },
+  { order_id: 'O002', demand_id: 'D003', skill_id: 'S002', demander_id: '20210001', provider_id: '20210102', reward_amount: 50, agreed_delivery_time: '2026-07-05', actual_delivery_time: '', order_status: '待确认', created_at: '2026-06-12 09:15' },
+  { order_id: 'O003', demand_id: '', skill_id: 'S004', demander_id: '20210001', provider_id: '20210104', reward_amount: 60, agreed_delivery_time: '2026-06-15', actual_delivery_time: '2026-06-14', order_status: '已完成', created_at: '2026-06-08 16:00' },
+  { order_id: 'O004', demand_id: '', skill_id: 'S003', demander_id: '20210001', provider_id: '20210103', reward_amount: 45, agreed_delivery_time: '2026-06-18', actual_delivery_time: '', order_status: '待验收', created_at: '2026-06-13 11:20' },
+  { order_id: 'O005', demand_id: 'D005', skill_id: '', demander_id: '20210001', provider_id: '20210105', reward_amount: 25, agreed_delivery_time: '2026-06-18', actual_delivery_time: '', order_status: '申诉中', created_at: '2026-06-14 08:00' },
 ];
 
 export function getUserById(studentId) {
