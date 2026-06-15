@@ -3,7 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 const tabs = [
   { path: '/home', label: '首页', icon: '🏠' },
   { path: '/publish', label: '发布', icon: '➕' },
-  { path: '/orders', label: '订单', icon: '📋' },
+  { path: '/messages', label: '消息', icon: '💬' },
   { path: '/profile', label: '我的', icon: '👤' },
 ];
 
