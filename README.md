@@ -1,39 +1,38 @@
-# 吉大互助 — 吉林大学校园技能共享平台
+# 吉大互助平台 (JLU-Mutual-Hub)
 
-吉林大学校园技能互助平台（学生端），支持学生发布技能、发布需求、生成工单、评价互认，实现校园内的"灵活用工"闭环。
+吉林大学校园技能与需求互助平台。悬赏互助，技能变现！
 
-**在线演示**：本地运行，暂未部署线上版本。
+**技术栈**：React 18 + Vite + Tailwind CSS v3 + React Router v6
 
-## 技术栈
+---
 
-| 类别 | 技术 |
-|------|------|
-| 框架 | React 18 (Vite) |
-| 样式 | Tailwind CSS v3 |
-| 路由 | React Router v6 |
-| 状态管理 | React Context + 自定义 Pub/Sub Store |
-| 头像 | [DiceBear Avataaars](https://www.dicebear.com/styles/avataaars) |
-| 卡片封面 | [Lorem Picsum](https://picsum.photos) |
+## 新人如何跑起来？（3 步搞定）
 
-## 快速开始
+1. 确保电脑装了 [Node.js](https://nodejs.org/)（下载 LTS 版）和 Git
+2. 克隆仓库并安装依赖：
 
 ```bash
-# 1. 克隆仓库
 git clone https://github.com/bxqbb66/SkillSharingIS.git
 cd SkillSharingIS
-
-# 2. 安装依赖
 npm install
+```
 
-# 3. 启动开发服务器
+3. 启动项目：
+
+```bash
 npm run dev
+```
 
-# 4. 生产构建
+终端会出现本地网址 `http://localhost:5173`，点开就能看到项目。
+
+生产构建：
+
+```bash
 npm run build
 npm run preview
 ```
 
-浏览器访问 `http://localhost:5173` 即可看到应用。
+---
 
 ## 项目结构
 
@@ -98,53 +97,99 @@ src/
 ## 响应式设计
 
 - **手机端 (<768px)**：底部Tab导航，单列卡片布局，底部悬浮操作栏
-- **电脑端 (≥768px)**：左侧固定侧边栏（56px宽），2-3列网格布局，Sticky操作面板
+- **电脑端 (≥768px)**：左侧固定侧边栏，2-3列网格布局
 
 采用 Mobile First 原则：默认样式为手机端，`md:` 前缀覆写为电脑端。
 
 ## 主题色
 
-吉林大学校徽蓝 `#003366`，定义在 `tailwind.config.js` 中：
+吉林大学校徽蓝 `#003366`，在 `tailwind.config.js` 中定义。
 
-```js
-colors: {
-  primary: { DEFAULT: '#003366', light: '#004a8f', dark: '#002244' },
-  accent: '#A4212E',
-}
-```
+---
 
-## 协作开发指南
+## 团队协作红线（必看，违规请客奶茶！）
 
-### 分支策略
+为了防止代码冲突导致大家白干，**严禁直接在主分支 `master` 上写代码！**
 
-- `master` — 主分支，保持可运行状态
-- `feat/xxx` — 新功能分支
-- `fix/xxx` — 修复分支
+### 正确的开发姿势
 
-### 提交规范
+1. 每天开工前，先拉取最新代码：
 
 ```bash
-feat: 新功能描述
-fix: 修复问题描述
-chore: 配置/工具变更
-style: UI/样式调整
+git checkout master
+git pull
 ```
 
-### 添加新页面
+2. 新建功能分支（分支名用英文，见名知意）：
 
-1. 在 `src/pages/` 下创建页面组件
-2. 在 `src/App.jsx` 中添加路由
-3. 如需数据，在 `src/data/mockData.js` 中添加 Mock 数据
-4. 如需全局状态，在 `src/data/store.js` 中扩展
+```bash
+git checkout -b feature/消息页面    # 新功能
+git checkout -b fix/首页样式错乱    # 修Bug
+```
 
-### Mock 数据规范
+3. 在你自己分支上写代码
 
-所有 Mock 数据必须严格使用 `CONTEXT.md` 中定义的表字段名（snake_case），例如：
+4. 写完后推送到远程：
 
-- 用户：`student_id`, `credit_score`, `credit_level`
+```bash
+git add .
+git commit -m "feat: 完成了消息页面的UI"
+git push origin feature/消息页面
+```
+
+5. **在 GitHub 网页端发起 Pull Request (PR)**，通知队长审核合并。**绝对不要自己合并到主分支！**
+
+---
+
+## AI 协作开发指南
+
+我们用 Claude Code 辅助开发，但 AI 没有记忆，它全靠读项目里的文件来理解上下文。项目里有三个灵魂文件：
+
+- **`CONTEXT.md`**：项目的基因库。记录了所有 Mock 数据结构、页面路由和核心逻辑。**绝对不要删！** 如果 AI 改错了数据结构，去这里查。
+- **`NEXT_STEPS.md`**：任务看板。你想让 AI 干什么活，先写在这里。
+- **`README.md`**：就是你现在看的这个。
+
+### 和 AI 对话的正确模板
+
+> 1. 先在 `NEXT_STEPS.md` 写好需求
+> 2. 在终端对 AI 说："我已经把需求写在 NEXT_STEPS.md 里了，请阅读并帮我开发。"
+
+---
+
+## Commit 提交规范
+
+提交代码时请按以下前缀开头，方便看历史记录：
+
+- `feat:` 新功能（例: `feat: 新增钱包页面`）
+- `fix:` 修 Bug（例: `fix: 修复登录状态丢失`）
+- `docs:` 改文档（例: `docs: 更新README`）
+- `style:` 改样式（例: `style: 优化首页卡片圆角`）
+- `chore:` 配置/工具变更
+
+---
+
+## Mock 数据规范
+
+所有 Mock 数据必须严格使用 `CONTEXT.md` 中定义的表字段名（snake_case）：
+
+- 用户：`student_id`, `credit_score`, `credit_level`, `balance`
 - 技能：`skill_id`, `provider_id`, `skill_tag`, `service_price`
 - 需求：`demand_id`, `demander_id`, `budget_amount`, `urgent_flag`
 - 工单：`order_id`, `order_status`, `reward_amount`
+
+---
+
+## 队长如何邀请协作者？
+
+如果要让队友能推代码到仓库，必须把他们加为协作者：
+
+1. 打开仓库页面，点击 **Settings**
+2. 左侧菜单点击 **Collaborators**
+3. 点击 **Add people**，输入队友的 GitHub 用户名或邮箱
+4. 权限选 **Write**，点击邀请
+5. **关键**：队友必须去邮箱点击确认链接接受邀请，才能推代码！（经常有人漏掉这步）
+
+---
 
 ## License
 
