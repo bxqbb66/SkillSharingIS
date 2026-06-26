@@ -42,8 +42,9 @@ export default function SkillDetail() {
 
   function handleConfirm() {
     setShowConfirm(false);
+    const order = store.createOrderFromSkill(skill.skill_id);
     setConfirmed(true);
-    setTimeout(() => navigate('/orders'), 1200);
+    setTimeout(() => navigate(`/order/${order.order_id}`), 1500);
   }
 
   if (confirmed) {

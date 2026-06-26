@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { orders, progressLogs, getUserById, currentUser } from '../data/mockData';
+import { getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 
@@ -26,14 +26,15 @@ export default function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const store = useStore();
-  const order = orders.find(o => o.order_id === id);
+  const myId = store.getCurrentUserId();
+  const order = store.getOrderById(id);
   const [showDeliver, setShowDeliver] = useState(false);
   const [showEvaluate, setShowEvaluate] = useState(false);
+  const [showAppeal, setShowAppeal] = useState(false);
   const [deliverText, setDeliverText] = useState('');
   const [starScore, setStarScore] = useState(5);
   const [evalText, setEvalText] = useState('');
   const [actionDone, setActionDone] = useState(false);
-  const [currentStatus, setCurrentStatus] = useState(order?.order_status || '');
   const [evaluated, setEvaluated] = useState(false);
 
   if (!order) {
@@ -52,26 +53,33 @@ export default function OrderDetail() {
     );
   }
 
-  const logs = progressLogs[order.order_id] || [];
-  const isProvider = order.provider_id === currentUser.student_id;
-  const isDemander = order.demander_id === currentUser.student_id;
+  const logs = order.progressLog || [];
+  const isProvider = order.provider_id === myId;
+  const isDemander = order.demander_id === myId;
   const otherParty = getUserById(isProvider ? order.demander_id : order.provider_id);
+  const currentStatus = order.order_status;
 
   function handleDeliver() {
     setShowDeliver(false);
-    setCurrentStatus('待验收');
+    store.submitDelivery(order.order_id, deliverText);
     setActionDone(true);
   }
 
   function handleAccept() {
-    setCurrentStatus('已完成');
+    store.acceptDelivery(order.order_id);
+    setActionDone(true);
+  }
+
+  function handleReject() {
+    setShowDeliver(false);
+    store.createAppeal(order.order_id, '验收异议', deliverText);
     setActionDone(true);
   }
 
   function handleEvaluate() {
     store.addEvaluation({
       order_id: order.order_id,
-      evaluator_id: currentUser.student_id,
+      evaluator_id: myId,
       evaluated_id: otherParty?.student_id,
       star_score: starScore,
       evaluation_text: evalText,
@@ -80,6 +88,10 @@ export default function OrderDetail() {
     setEvaluated(true);
     setActionDone(true);
   }
+
+  // Check if already evaluated
+  const myEvals = store.getMyEvals(myId);
+  const alreadyEvaluated = myEvals.byMe.some(e => e.order_id === order.order_id);
 
   return (
     <div className="min-h-screen pb-6 md:max-w-3xl md:mx-auto md:pt-6">
@@ -96,7 +108,7 @@ export default function OrderDetail() {
           <div>
             <div className="text-xs text-gray-500 mb-1">工单 {order.order_id}</div>
             <span className={`inline-block text-lg font-bold ${statusTextColor[currentStatus] || ''}`}>
-              {currentStatus}{evaluated ? '（已评价）' : ''}
+              {currentStatus}{alreadyEvaluated ? '（已评价）' : ''}
             </span>
           </div>
           <div className="text-right">
@@ -110,6 +122,9 @@ export default function OrderDetail() {
       <div className="bg-white px-4 py-4 md:rounded-xl md:shadow-sm md:mx-0 md:mt-4">
         <h3 className="text-sm font-semibold text-gray-700 mb-4">进度追踪</h3>
         <div className="relative">
+          {logs.length === 0 && (
+            <p className="text-xs text-gray-400 text-center py-4">暂无进度记录</p>
+          )}
           {logs.map((log, i) => (
             <div key={i} className="flex gap-4 pb-5 relative">
               {i < logs.length - 1 && (
@@ -121,8 +136,8 @@ export default function OrderDetail() {
                 {i === logs.length - 1 && <span className="w-2 h-2 rounded-full bg-white" />}
               </div>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-800">{log.title}</div>
-                <div className="text-xs text-gray-500 mt-0.5">{log.desc}</div>
+                <div className="text-sm font-medium text-gray-800">{log.title || log.content}</div>
+                <div className="text-xs text-gray-500 mt-0.5">{log.desc || log.content}</div>
                 <div className="text-xs text-gray-400 mt-0.5">{log.time}</div>
               </div>
             </div>
@@ -154,6 +169,16 @@ export default function OrderDetail() {
               <span className="text-gray-800 text-right max-w-[60%]">{order.delivery_requirement}</span>
             </div>
           )}
+          {order.transactionStatus && (
+            <div className="flex justify-between">
+              <span className="text-gray-500">资金状态</span>
+              <span className={`text-xs px-1.5 py-0.5 rounded ${
+                order.transactionStatus === '已转账' ? 'bg-green-50 text-green-700' :
+                order.transactionStatus === '已冻结' ? 'bg-blue-50 text-blue-700' :
+                'bg-gray-100 text-gray-600'
+              }`}>{order.transactionStatus}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -183,57 +208,70 @@ export default function OrderDetail() {
           </div>
         )}
 
+        {currentStatus === '待确认' && (
+          <button onClick={() => { store.confirmOrder(order.order_id); setActionDone(true); }} className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors btn-press">
+            确认接单并开始服务
+          </button>
+        )}
+
         {currentStatus === '进行中' && isProvider && (
-          <button onClick={() => setShowDeliver(true)} className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors">
+          <button onClick={() => setShowDeliver(true)} className="w-full bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors btn-press">
             提交交付成果
           </button>
         )}
 
         {currentStatus === '待验收' && isDemander && (
           <div className="flex gap-3">
-            <button onClick={() => setShowDeliver(true)} className="flex-1 bg-red-50 text-red-600 border border-red-200 font-medium py-3 rounded-xl text-sm hover:bg-red-100 transition-colors">
+            <button onClick={() => setShowAppeal(true)} className="flex-1 bg-red-50 text-red-600 border border-red-200 font-medium py-3 rounded-xl text-sm hover:bg-red-100 transition-colors">
               发起申诉
             </button>
-            <button onClick={handleAccept} className="flex-1 bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors">
+            <button onClick={handleAccept} className="flex-1 bg-primary text-white font-medium py-3 rounded-xl text-sm hover:bg-primary-light transition-colors btn-press">
               确认验收并付款
             </button>
           </div>
         )}
 
-        {currentStatus === '已完成' && !evaluated && (
-          <button onClick={() => setShowEvaluate(true)} className="w-full bg-amber-500 text-white font-medium py-3 rounded-xl text-sm hover:bg-amber-600 transition-colors">
+        {currentStatus === '已完成' && !alreadyEvaluated && (
+          <button onClick={() => setShowEvaluate(true)} className="w-full bg-amber-500 text-white font-medium py-3 rounded-xl text-sm hover:bg-amber-600 transition-colors btn-press">
             评价对方
           </button>
         )}
 
-        {currentStatus === '已完成' && evaluated && (
+        {currentStatus === '已完成' && alreadyEvaluated && (
           <p className="text-center text-sm text-gray-400 py-2">已评价，感谢你的反馈</p>
         )}
 
-        {!actionDone && (
-          (currentStatus === '进行中' && !isProvider) ||
-          (currentStatus === '待确认') ||
-          (currentStatus === '申诉中')
-        ) && (
-          <p className="text-center text-sm text-gray-400 py-2">
-            {currentStatus === '进行中' ? '等待服务方提交成果...' :
-             currentStatus === '待确认' ? '等待服务方确认接单...' :
-             '平台正在处理申诉，请耐心等待'}
-          </p>
+        {!actionDone && currentStatus === '进行中' && !isProvider && (
+          <p className="text-center text-sm text-gray-400 py-2">等待服务方提交成果...</p>
+        )}
+        {currentStatus === '申诉中' && (
+          <p className="text-center text-sm text-gray-400 py-2">平台正在处理申诉，请耐心等待</p>
         )}
       </div>
 
-      {/* 提交交付/申诉弹窗 */}
+      {/* 提交交付弹窗 */}
       {showDeliver && (
         <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
           <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-bold text-gray-800 mb-4">
-              {currentStatus === '待验收' && isDemander ? '发起申诉' : '提交交付成果'}
-            </h3>
-            <textarea rows={4} placeholder={currentStatus === '待验收' && isDemander ? '请描述申诉原因...' : '上传截图链接，或输入交付说明...'} value={deliverText} onChange={e => setDeliverText(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary mb-4" />
+            <h3 className="text-lg font-bold text-gray-800 mb-4">提交交付成果</h3>
+            <textarea rows={4} placeholder="上传截图链接，或输入交付说明..." value={deliverText} onChange={e => setDeliverText(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary mb-4" />
             <div className="flex gap-3">
               <button onClick={() => setShowDeliver(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
-              <button onClick={handleDeliver} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-light transition-colors">确认提交</button>
+              <button onClick={handleDeliver} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-light transition-colors btn-press">确认提交</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 申诉弹窗 */}
+      {showAppeal && (
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-6">
+          <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">发起申诉</h3>
+            <textarea rows={4} placeholder="请描述申诉原因..." value={deliverText} onChange={e => setDeliverText(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-400 mb-4" />
+            <div className="flex gap-3">
+              <button onClick={() => setShowAppeal(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
+              <button onClick={handleReject} className="flex-1 py-2.5 text-sm font-medium text-white bg-red-500 rounded-lg hover:bg-red-600 transition-colors btn-press">确认申诉</button>
             </div>
           </div>
         </div>
@@ -253,7 +291,7 @@ export default function OrderDetail() {
             <textarea rows={3} placeholder="写下你的评价..." value={evalText} onChange={e => setEvalText(e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary mb-4" />
             <div className="flex gap-3">
               <button onClick={() => setShowEvaluate(false)} className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">取消</button>
-              <button onClick={handleEvaluate} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-light transition-colors">提交评价</button>
+              <button onClick={handleEvaluate} className="flex-1 py-2.5 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary-light transition-colors btn-press">提交评价</button>
             </div>
           </div>
         </div>

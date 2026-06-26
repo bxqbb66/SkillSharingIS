@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../data/AuthContext';
+import { useStore } from '../data/store';
 
 const categories = ['学业辅导', '技术服务', '生活服务', '文体服务'];
 
@@ -26,6 +27,7 @@ const initDemand = {
 export default function Publish() {
   const navigate = useNavigate();
   const { isLoggedIn } = useAuth();
+  const store = useStore();
   const [tab, setTab] = useState('skill');
 
   if (!isLoggedIn) {
@@ -82,6 +84,11 @@ export default function Publish() {
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
+    }
+    if (tab === 'skill') {
+      store.addSkill(skill);
+    } else {
+      store.addDemand(demand);
     }
     setSubmitted(true);
     setTimeout(() => {

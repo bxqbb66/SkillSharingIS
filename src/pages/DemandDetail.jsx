@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getDemandById, getUserById } from '../data/mockData';
+import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 import { DetailSkeleton } from '../components/Skeleton';
 
@@ -14,6 +15,7 @@ const categoryColors = {
 export default function DemandDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const store = useStore();
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -39,10 +41,9 @@ export default function DemandDetail() {
 
   function handleConfirm() {
     setShowConfirm(false);
+    const order = store.createOrderFromDemand(demand.demand_id);
     setConfirmed(true);
-    setTimeout(() => {
-      navigate('/orders');
-    }, 1200);
+    setTimeout(() => navigate(`/order/${order.order_id}`), 1500);
   }
 
   if (confirmed) {
