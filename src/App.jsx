@@ -27,34 +27,12 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Student routes */}
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Navigate to="/home" replace />} />
-            <Route path="home" element={<Home />} />
-            <Route path="publish" element={<Publish />} />
-            <Route path="messages" element={<Messages />} />
-            <Route path="orders" element={<Orders />} />
-            <Route path="profile" element={<Profile />} />
-          </Route>
-          <Route path="skill/:id" element={<SkillDetail />} />
-          <Route path="demand/:id" element={<DemandDetail />} />
-          <Route path="order/:id" element={<OrderDetail />} />
-          <Route path="user/:id" element={<UserProfile />} />
-          <Route path="appeals" element={<Appeals />} />
-          <Route path="login" element={<Login />} />
-
-          {/* Admin routes */}
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<Navigate to="/admin/dashboard" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="contents" element={<ContentAudit />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="appeals" element={<AdminAppeals />} />
-            <Route path="transactions" element={<AdminTransactions />} />
-            <Route path="rules" element={<AdminRules />} />
-          </Route>
+          <Route path="*" element={<div style={{padding:40,fontFamily:'sans-serif'}}>
+            <h1 style={{color:'#003366'}}>吉大技能共享平台</h1>
+            <p>如果你看到这行字，说明 React 渲染正常，问题出在路由匹配上。</p>
+            <p>当前路径：{typeof window !== 'undefined' ? window.location.pathname : ''}</p>
+            <a href="/home">去首页</a>
+          </div>} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
