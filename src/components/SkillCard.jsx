@@ -1,29 +1,33 @@
 import { Link } from 'react-router-dom';
-import { getUserById } from '../data/mockData';
-import { avatarUrl, coverUrl } from '../utils/images';
+import { useStore } from '../data/store';
+import { avatarUrl, getCategoryMeta } from '../utils/images';
 
 const categoryColors = {
-  '学业': 'bg-blue-50 text-blue-700',
-  '技术': 'bg-purple-50 text-purple-700',
-  '生活': 'bg-green-50 text-green-700',
-  '文体': 'bg-orange-50 text-orange-700',
+  '学业': 'bg-blue-50 text-blue-700', '学业辅导': 'bg-blue-50 text-blue-700',
+  '技术': 'bg-purple-50 text-purple-700', '技术服务': 'bg-purple-50 text-purple-700',
+  '生活': 'bg-green-50 text-green-700', '生活服务': 'bg-green-50 text-green-700',
+  '文体': 'bg-orange-50 text-orange-700', '文体服务': 'bg-orange-50 text-orange-700',
 };
 
 export default function SkillCard({ skill }) {
-  const provider = getUserById(skill.provider_id);
+  const store = useStore();
+  const provider = store.getUserById(skill.provider_id);
   if (!provider) return null;
+
+  const meta = getCategoryMeta(skill.skill_category);
 
   return (
     <Link
       to={`/skill/${skill.skill_id}`}
       className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover-card cursor-pointer block"
     >
-      <img
-        src={coverUrl(skill.skill_id)}
-        alt={skill.skill_tag}
-        className="w-full h-32 object-cover"
-        loading="lazy"
-      />
+      {/* Category gradient header */}
+      <div className={`relative h-28 bg-gradient-to-br ${meta.gradient} flex items-center justify-center`}>
+        <span className="text-5xl drop-shadow-lg">{meta.emoji}</span>
+        <div className="absolute bottom-0 left-0 right-0 bg-black/20 px-3 py-1.5">
+          <span className="text-white text-xs font-medium truncate block">{skill.skill_tag}</span>
+        </div>
+      </div>
       <div className="p-4">
         <div className="flex items-start gap-3">
           <img
