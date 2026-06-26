@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../data/AuthContext';
+import { useAdminStore } from '../data/store';
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { adminLogin } = useAdminStore();
   const [tab, setTab] = useState('login');
   const [form, setForm] = useState({
     studentId: '',
@@ -22,6 +24,12 @@ export default function Login() {
   function handleLogin() {
     if (!form.studentId.trim() || !form.password.trim()) {
       setError('请输入学号和密码');
+      return;
+    }
+    // Admin login check
+    if (form.studentId === 'admin' && form.password === 'admin123') {
+      adminLogin(form.studentId, form.password);
+      navigate('/admin/dashboard', { replace: true });
       return;
     }
     const ok = login(form.studentId, form.password);
@@ -134,10 +142,15 @@ export default function Login() {
 
           <button
             onClick={tab === 'login' ? handleLogin : handleRegister}
-            className="w-full bg-primary text-white font-medium py-2.5 rounded-lg text-sm hover:bg-primary-light transition-colors"
+            className="w-full bg-primary text-white font-medium py-2.5 rounded-lg text-sm hover:bg-primary-light transition-colors btn-press"
           >
             {tab === 'login' ? '登录' : '注册'}
           </button>
+
+          <p className="text-xs text-gray-400 text-center mt-4">
+            学生账号：任意学号+密码即可登录<br />
+            管理员账号：admin / admin123
+          </p>
         </div>
       </div>
     </div>

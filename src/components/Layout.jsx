@@ -1,5 +1,5 @@
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { useStore } from '../data/store';
+import { useStore, useAdminStore } from '../data/store';
 
 const tabs = [
   { path: '/home', label: '首页', icon: '🏠' },
@@ -11,6 +11,7 @@ const tabs = [
 export default function Layout() {
   const location = useLocation();
   const store = useStore();
+  const { isAdminLoggedIn } = useAdminStore();
   const unread = store.hasUnread();
 
   return (
@@ -21,6 +22,15 @@ export default function Layout() {
           <span className="text-xl font-bold tracking-wide">吉大技能共享</span>
         </div>
         <nav className="flex-1 py-4 space-y-1 px-3">
+          {isAdminLoggedIn && (
+            <NavLink
+              to="/admin/dashboard"
+              className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm transition-colors mb-3 bg-white/15 font-semibold border border-white/20"
+            >
+              <span className="text-lg">🛡️</span>
+              <span>管理后台</span>
+            </NavLink>
+          )}
           {tabs.map((tab) => {
             const isActive = location.pathname.startsWith(tab.path);
             return (
@@ -52,6 +62,19 @@ export default function Layout() {
       {/* 手机端：底部 Tab 导航栏 */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
         <div className="flex justify-around items-center h-14">
+          {isAdminLoggedIn && (
+            <NavLink
+              to="/admin/dashboard"
+              className={({ isActive }) =>
+                `flex flex-col items-center gap-0.5 text-xs ${
+                  isActive ? 'text-primary font-semibold' : 'text-gray-500'
+                }`
+              }
+            >
+              <span className="text-lg">🛡️</span>
+              <span>管理</span>
+            </NavLink>
+          )}
           {tabs.map((tab) => {
             const isActive = location.pathname.startsWith(tab.path);
             return (
