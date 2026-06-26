@@ -24,7 +24,9 @@
       "Bash(git pull *)",
       "Bash(ls vercel.json)",
       "Bash(cat vercel.json)",
-      "WebFetch(domain:skillsharingis.vercel.app)"
+      "WebFetch(domain:skillsharingis.vercel.app)",
+      "WebFetch(domain:jlu-skillsharing.xyz)",
+      "WebFetch(domain:skillsharingis-git-master-bxqbb66s-projects.vercel.app)"
     ]
   }
 }
