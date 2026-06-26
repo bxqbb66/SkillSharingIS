@@ -6,11 +6,44 @@ import {
   skills as initSkills,
   demands as initDemands,
   users as initUsers,
-  currentUser,
 } from './mockData';
 
 const STORAGE_KEY = 'jlu-skill-share-state';
-const CURRENT_USER_ID = currentUser.student_id;
+const USER_ID_KEY = 'jlu-skill-share-current-user-id';
+
+function getCurrentUserId() {
+  return localStorage.getItem(USER_ID_KEY) || initUsers[0]?.student_id || '20210001';
+}
+
+function setCurrentUserId(id) {
+  localStorage.setItem(USER_ID_KEY, id);
+}
+
+// Module-level exports for AuthContext
+export { getCurrentUserId, setCurrentUserId };
+
+// Module-level user operations
+export function findUserById(studentId) {
+  return _users.find(u => u.student_id === studentId);
+}
+
+export function createUser(studentId, name) {
+  const newUser = {
+    student_id: studentId,
+    name: name || `用户${studentId.slice(-4)}`,
+    college: '吉林大学',
+    phone: '',
+    real_name_status: 1,
+    credit_score: 650,
+    credit_level: 'C',
+    balance: 100,
+    points_balance: 0,
+    frozen_amount: 0,
+  };
+  _users.push(newUser);
+  persist();
+  return newUser;
+}
 
 function clone(data) {
   return JSON.parse(JSON.stringify(data));
@@ -270,7 +303,7 @@ export function useStore() {
         order_id: orderId,
         skill_id: skill.skill_id,
         demand_id: '',
-        demander_id: CURRENT_USER_ID,
+        demander_id: getCurrentUserId(),
         provider_id: skill.provider_id,
         task_description: skill.skill_tag,
         delivery_requirement: skill.skill_description,
@@ -299,7 +332,7 @@ export function useStore() {
         skill_id: '',
         demand_id: demand.demand_id,
         demander_id: demand.demander_id,
-        provider_id: CURRENT_USER_ID,
+        provider_id: getCurrentUserId(),
         task_description: demand.demand_tag,
         delivery_requirement: demand.delivery_requirement || '',
         reward_amount: Number(demand.budget_amount),
@@ -389,7 +422,7 @@ export function useStore() {
       const appeal = {
         appeal_id: appealId,
         order_id: orderId,
-        appellant_id: CURRENT_USER_ID,
+        appellant_id: getCurrentUserId(),
         appeal_type: appealType,
         appeal_description: description,
         process_status: '待处理',
@@ -515,7 +548,7 @@ export function useStore() {
     addSkill: useCallback((form) => {
       const skill = {
         skill_id: makeId('skill'),
-        provider_id: CURRENT_USER_ID,
+        provider_id: getCurrentUserId(),
         skill_tag: form.skill_tag,
         skill_category: form.skill_category,
         service_price: Number(form.service_price),
@@ -535,7 +568,7 @@ export function useStore() {
     addDemand: useCallback((form) => {
       const demand = {
         demand_id: makeId('demand'),
-        demander_id: CURRENT_USER_ID,
+        demander_id: getCurrentUserId(),
         demand_tag: form.demand_tag,
         service_type: form.service_type,
         task_description: form.task_description || '',
@@ -566,7 +599,7 @@ export function useStore() {
     }, []),
 
     // ----- compute helpers (non-reactive) -----
-    getCurrentUserId: () => CURRENT_USER_ID,
+    getCurrentUserId: () => getCurrentUserId(),
     getOrderById: useCallback((orderId) => _orders.find(o => o.order_id === orderId), []),
   };
 }
