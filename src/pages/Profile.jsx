@@ -25,8 +25,8 @@ const quickLinks = [
   { icon: '📦', label: '我发布的技能', path: '/home?my=skills' },
   { icon: '📝', label: '我发布的需求', path: '/home?my=demands' },
   { icon: '📋', label: '我的工单', path: '/orders' },
+  { icon: '⚖️', label: '我的申诉', path: '/appeals' },
   { icon: '⭐', label: '我的评价', action: 'evals' },
-  { icon: '📊', label: '信用明细', path: '/profile' },
   { icon: '⚙️', label: '设置', path: '/profile' },
 ];
 

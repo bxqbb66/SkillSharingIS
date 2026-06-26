@@ -12,6 +12,7 @@ import SkillDetail from './pages/SkillDetail';
 import DemandDetail from './pages/DemandDetail';
 import OrderDetail from './pages/OrderDetail';
 import UserProfile from './pages/UserProfile';
+import Appeals from './pages/Appeals';
 import AdminLogin from './pages/admin/AdminLogin';
 import Dashboard from './pages/admin/Dashboard';
 import ContentAudit from './pages/admin/ContentAudit';
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="demand/:id" element={<DemandDetail />} />
           <Route path="order/:id" element={<OrderDetail />} />
           <Route path="user/:id" element={<UserProfile />} />
+          <Route path="appeals" element={<Appeals />} />
           <Route path="login" element={<Login />} />
 
           {/* Admin routes */}
