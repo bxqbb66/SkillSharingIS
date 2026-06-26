@@ -74,7 +74,13 @@ let _listeners = [];
 const stored = readStoredState();
 
 let _contacts = stored?.contacts || initContacts.map(c => ({ ...c }));
-let _notifications = stored?.notifications || initNotifs.map(n => ({ ...n }));
+let _notifications = (() => {
+  const raw = stored?.notifications;
+  if (!raw) return initNotifs.map(n => ({ ...n }));
+  // Filter out old-format notifications that have no text field
+  const valid = raw.filter(n => n.text && n.text.trim());
+  return valid.length > 0 ? valid : initNotifs.map(n => ({ ...n }));
+})();
 let _orders = stored?.orders || initOrders.map(o => normalizeOrder(o));
 let _skills = stored?.skills || initSkills.map(s => ({ ...s }));
 let _demands = stored?.demands || initDemands.map(d => ({ ...d }));
