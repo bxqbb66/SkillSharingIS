@@ -50,12 +50,13 @@ function normalizeOrder(order) {
 let _listeners = [];
 const stored = readStoredState();
 
-let _contacts = stored?.contacts || initContacts.map(c => ({ ...c }));
-let _notifications = stored?.notifications || initNotifs.map(n => ({ ...n }));
-let _orders = stored?.orders || initOrders.map(o => normalizeOrder(o));
-let _skills = stored?.skills || initSkills.map(s => ({ ...s }));
-let _demands = stored?.demands || initDemands.map(d => ({ ...d }));
-let _users = stored?.users || initUsers.map(u => ({ ...u }));
+function validArray(arr) { return Array.isArray(arr) && arr.length > 0; }
+let _contacts = validArray(stored?.contacts) ? stored.contacts : initContacts.map(c => ({ ...c }));
+let _notifications = validArray(stored?.notifications) ? stored.notifications : initNotifs.map(n => ({ ...n }));
+let _orders = validArray(stored?.orders) ? stored.orders : initOrders.map(o => normalizeOrder(o));
+let _skills = validArray(stored?.skills) ? stored.skills : initSkills.map(s => ({ ...s }));
+let _demands = validArray(stored?.demands) ? stored.demands : initDemands.map(d => ({ ...d }));
+let _users = validArray(stored?.users) ? stored.users : initUsers.map(u => ({ ...u }));
 let _evaluations = stored?.evaluations || [
   { evaluation_id: 'E001', order_id: 'O003', evaluator_id: '20210104', evaluated_id: '20210001', star_score: 5, evaluation_text: '需求方很配合，验收很快！', created_at: '2026-06-14 14:00' },
   { evaluation_id: 'E002', order_id: 'O003', evaluator_id: '20210001', evaluated_id: '20210104', star_score: 4, evaluation_text: 'PPT做得很专业，略有延迟但质量很高', created_at: '2026-06-14 14:10' },
