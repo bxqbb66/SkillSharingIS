@@ -102,6 +102,14 @@ let _account = stored?.account || {
   frozen_amount: currentUser.frozen_amount || 0,
 };
 
+// Apply custom overrides after loading from localStorage
+(function applyOverrides() {
+  const user = _users.find(u => u.student_id === '20210001');
+  if (user) {
+    user.name = '鲜花饼';
+  }
+})();
+
 function normalizeOrder(order) {
   return {
     progressLog: [],

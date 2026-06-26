@@ -1,4 +1,6 @@
 export function avatarUrl(studentId) {
+  // Custom avatars
+  if (studentId === '20210001') return '/avatars/20210001.png';
   return `https://api.dicebear.com/7.x/avataaars/svg?seed=${studentId}`;
 }
 

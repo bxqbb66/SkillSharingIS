@@ -12,7 +12,7 @@ export const users = [
 // 当前登录用户
 export const currentUser = {
   student_id: '20210001',
-  name: '林小吉',
+  name: '鲜花饼',
   college: '计算机科学与技术学院',
   phone: '13800000001',
   real_name_status: 1,
