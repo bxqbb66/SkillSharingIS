@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getDemandById, getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 import { DetailSkeleton } from '../components/Skeleton';
@@ -25,7 +24,7 @@ export default function DemandDetail() {
     return () => clearTimeout(timer);
   }, []);
 
-  const demand = getDemandById(id);
+  const demand = store.getDemandById(id);
 
   if (loading) return <DetailSkeleton />;
 
@@ -37,7 +36,7 @@ export default function DemandDetail() {
     );
   }
 
-  const demander = getUserById(demand.demander_id);
+  const demander = store.getUserById(demand.demander_id);
 
   function handleConfirm() {
     setShowConfirm(false);

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getUserById, skills, demands } from '../data/mockData';
 import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 import SkillCard from '../components/SkillCard';
@@ -26,7 +25,7 @@ export default function UserProfile() {
     return () => clearTimeout(timer);
   }, []);
 
-  const user = getUserById(id);
+  const user = store.getUserById(id);
 
   if (loading) return <ProfileSkeleton />;
 
@@ -46,8 +45,10 @@ export default function UserProfile() {
     );
   }
 
-  const userSkills = skills.filter(s => s.provider_id === user.student_id && s.audit_status === 1);
-  const userDemands = demands.filter(d => d.demander_id === user.student_id && d.audit_status === 1);
+  const allSkills = store.getSkills();
+  const allDemands = store.getDemands();
+  const userSkills = allSkills.filter(s => s.provider_id === user.student_id && s.audit_status === 1);
+  const userDemands = allDemands.filter(d => d.demander_id === user.student_id && d.audit_status === 1);
   const userEvals = store.getEvaluationsForUser(user.student_id);
   const completedCount = userSkills.filter(s => s.skill_status === 2).length + userDemands.filter(d => d.demand_status === 2).length;
 
@@ -188,7 +189,7 @@ export default function UserProfile() {
             ) : (
               <div className="space-y-3">
                 {userEvals.map(e => {
-                  const evaluator = getUserById(e.evaluator_id);
+                  const evaluator = store.getUserById(e.evaluator_id);
                   return (
                     <div key={e.evaluation_id} className="bg-white rounded-xl shadow-sm p-4">
                       <div className="flex items-center gap-3 mb-2">

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { orders, skills, demands, getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
 import { useAuth } from '../data/AuthContext';
 import { avatarUrl } from '../utils/images';
@@ -47,14 +46,16 @@ export default function Profile() {
     }
   }, [isLoggedIn]);
 
-  const mySkills = user ? skills.filter(s => s.provider_id === user.student_id) : [];
-  const myDemands = user ? demands.filter(d => d.demander_id === user.student_id) : [];
+  const mySkills = user ? store.getSkills().filter(s => s.provider_id === user.student_id) : [];
+  const myDemands = user ? store.getDemands().filter(d => d.demander_id === user.student_id) : [];
   const { byMe, aboutMe } = user ? store.getMyEvals(user.student_id) : { byMe: [], aboutMe: [] };
   const currentEvals = evalTab === 'byMe' ? byMe : aboutMe;
 
+  const allOrders = store.getOrders();
+  const myOrders = user ? allOrders.filter(o => o.demander_id === user.student_id || o.provider_id === user.student_id) : [];
   const filteredOrders = orderFilter === '全部'
-    ? orders
-    : orders.filter(o => o.order_status === orderFilter);
+    ? myOrders
+    : myOrders.filter(o => o.order_status === orderFilter);
 
   if (!isLoggedIn) {
     return (
@@ -148,7 +149,7 @@ export default function Profile() {
               <div className="text-xs text-gray-500 mt-0.5">需求发布</div>
             </div>
             <div>
-              <div className="text-lg font-bold text-primary">{orders.length}</div>
+              <div className="text-lg font-bold text-primary">{myOrders.length}</div>
               <div className="text-xs text-gray-500 mt-0.5">工单总数</div>
             </div>
           </div>
@@ -222,7 +223,7 @@ export default function Profile() {
             ) : (
               <div className="space-y-3">
                 {currentEvals.map(e => {
-                  const other = getUserById(evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id);
+                  const other = store.getUserById(evalTab === 'byMe' ? e.evaluated_id : e.evaluator_id);
                   return (
                     <div key={e.evaluation_id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                       <div className="flex items-center gap-2 mb-1">

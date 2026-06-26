@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { getSkillById, getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 import { DetailSkeleton } from '../components/Skeleton';
@@ -25,7 +24,7 @@ export default function SkillDetail() {
     return () => clearTimeout(timer);
   }, []);
 
-  const skill = getSkillById(id);
+  const skill = store.getSkillById(id);
 
   if (loading) return <DetailSkeleton />;
 
@@ -37,7 +36,7 @@ export default function SkillDetail() {
     );
   }
 
-  const provider = getUserById(skill.provider_id);
+  const provider = store.getUserById(skill.provider_id);
   const providerEvals = store.getEvaluationsForUser(skill.provider_id);
 
   function handleConfirm() {
@@ -121,7 +120,7 @@ export default function SkillDetail() {
             </h3>
             <div className="space-y-3">
               {providerEvals.map(e => {
-                const evaluator = getUserById(e.evaluator_id);
+                const evaluator = store.getUserById(e.evaluator_id);
                 return (
                   <div key={e.evaluation_id} className="border-b border-gray-50 pb-3 last:border-0 last:pb-0">
                     <div className="flex items-center gap-2 mb-1">

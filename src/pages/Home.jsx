@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { skills, demands, currentUser } from '../data/mockData';
 import { useAuth } from '../data/AuthContext';
+import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 import SkillCard from '../components/SkillCard';
 import DemandCard from '../components/DemandCard';
@@ -13,6 +13,7 @@ export default function Home() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { isLoggedIn, user } = useAuth();
+  const store = useStore();
   const myFilter = searchParams.get('my');
   const [loading, setLoading] = useState(true);
 
@@ -29,9 +30,10 @@ export default function Home() {
   }, []);
 
   const displayedSkills = useMemo(() => {
+    const allSkills = store.getSkills();
     let list = showOnlyMine
-      ? skills.filter(s => s.provider_id === currentUser.student_id)
-      : skills;
+      ? allSkills.filter(s => s.provider_id === user?.student_id)
+      : allSkills.filter(s => s.audit_status === 1); // Only approved
     if (activeCategory !== '全部') {
       list = list.filter(s => s.skill_category === activeCategory);
     }
@@ -40,12 +42,13 @@ export default function Home() {
       list = list.filter(s => s.skill_tag.toLowerCase().includes(kw));
     }
     return list;
-  }, [activeCategory, keyword, showOnlyMine]);
+  }, [activeCategory, keyword, showOnlyMine, store]);
 
   const displayedDemands = useMemo(() => {
+    const allDemands = store.getDemands();
     let list = showOnlyMine
-      ? demands.filter(d => d.demander_id === currentUser.student_id)
-      : demands;
+      ? allDemands.filter(d => d.demander_id === user?.student_id)
+      : allDemands.filter(d => d.audit_status === 1); // Only approved
     if (activeCategory !== '全部') {
       list = list.filter(d => d.service_type === activeCategory);
     }
@@ -54,7 +57,7 @@ export default function Home() {
       list = list.filter(d => d.demand_tag.toLowerCase().includes(kw));
     }
     return list;
-  }, [activeCategory, keyword, showOnlyMine]);
+  }, [activeCategory, keyword, showOnlyMine, store]);
 
   function handleTabChange(tab) {
     setActiveTab(tab);

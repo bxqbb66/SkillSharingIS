@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { orders } from '../data/mockData';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../data/AuthContext';
+import { useStore } from '../data/store';
 import { ListSkeleton } from '../components/Skeleton';
 
 const statusColors = {
@@ -13,6 +14,9 @@ const statusColors = {
 };
 
 export default function Orders() {
+  const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
+  const store = useStore();
   const [orderFilter, setOrderFilter] = useState('全部');
   const [loading, setLoading] = useState(true);
 
@@ -21,9 +25,27 @@ export default function Orders() {
     return () => clearTimeout(timer);
   }, []);
 
+  if (!isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+        <div className="text-5xl mb-4">📋</div>
+        <h2 className="text-lg font-bold text-gray-800 mb-2">请先登录</h2>
+        <p className="text-sm text-gray-500 mb-6">登录后查看工单</p>
+        <button
+          onClick={() => navigate('/login')}
+          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-primary-light transition-colors"
+        >
+          登录 / 注册
+        </button>
+      </div>
+    );
+  }
+
+  const allOrders = store.getOrders();
+  const myOrders = allOrders.filter(o => o.demander_id === user?.student_id || o.provider_id === user?.student_id);
   const filteredOrders = orderFilter === '全部'
-    ? orders
-    : orders.filter(o => o.order_status === orderFilter);
+    ? myOrders
+    : myOrders.filter(o => o.order_status === orderFilter);
 
   return (
     <div className="p-4 md:p-6 md:max-w-3xl md:mx-auto">

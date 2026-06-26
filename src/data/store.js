@@ -192,6 +192,10 @@ export function useStore() {
     getAppeals: () => _appeals,
     getCreditLogs: () => _creditLogs,
     getAccount: () => _account,
+    getSkillById: (skillId) => _skills.find(s => s.skill_id === skillId),
+    getDemandById: (demandId) => _demands.find(d => d.demand_id === demandId),
+    getUserById: (studentId) => _users.find(u => u.student_id === studentId),
+    getOrderById: (orderId) => _orders.find(o => o.order_id === orderId),
     hasUnread: () => _contacts.some(c => c.unread > 0) || _notifications.some(n => n.unread),
 
     // ----- chat / notification -----

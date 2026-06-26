@@ -1,10 +1,30 @@
 import { useState } from 'react';
-import { chatMessages, getUserById, currentUser } from '../data/mockData';
+import { useNavigate } from 'react-router-dom';
+import { chatMessages } from '../data/mockData';
+import { useAuth } from '../data/AuthContext';
 import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 
 export default function Messages() {
+  const navigate = useNavigate();
+  const { isLoggedIn, user } = useAuth();
   const store = useStore();
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen px-6 text-center">
+        <div className="text-5xl mb-4">💬</div>
+        <h2 className="text-lg font-bold text-gray-800 mb-2">请先登录</h2>
+        <p className="text-sm text-gray-500 mb-6">登录后查看消息和通知</p>
+        <button
+          onClick={() => navigate('/login')}
+          className="bg-primary text-white px-8 py-2.5 rounded-full text-sm font-medium hover:bg-primary-light transition-colors"
+        >
+          登录 / 注册
+        </button>
+      </div>
+    );
+  }
   const [tab, setTab] = useState('chat');
   const [activeChat, setActiveChat] = useState(null);
   const [inputText, setInputText] = useState('');
@@ -13,7 +33,7 @@ export default function Messages() {
   const contacts = store.getContacts();
   const notifs = store.getNotifications();
 
-  const contact = activeChat ? getUserById(activeChat) : null;
+  const contact = activeChat ? store.getUserById(activeChat) : null;
   const msgs = activeChat
     ? (localMessages[activeChat] || chatMessages[activeChat] || [])
     : [];
@@ -24,7 +44,7 @@ export default function Messages() {
     const prev = localMessages[key] || chatMessages[key] || [];
     setLocalMessages({
       ...localMessages,
-      [key]: [...prev, { from: currentUser.student_id, text: inputText.trim(), time: '刚刚' }],
+      [key]: [...prev, { from: user?.student_id, text: inputText.trim(), time: '刚刚' }],
     });
     setInputText('');
   }
@@ -67,7 +87,7 @@ export default function Messages() {
         {tab === 'chat' && (
           <div className="flex-1">
             {contacts.map(c => {
-              const user = getUserById(c.contact_id);
+              const user = store.getUserById(c.contact_id);
               if (!user) return null;
               return (
                 <button
@@ -151,7 +171,7 @@ export default function Messages() {
       {/* Messages */}
       <div className="flex-1 bg-gray-50 px-4 py-4 space-y-3 overflow-y-auto">
         {msgs.map((msg, i) => {
-          const isMe = msg.from === currentUser.student_id;
+          const isMe = msg.from === user?.student_id;
           return (
             <div key={i} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
               <div className={`max-w-[75%] px-4 py-2.5 rounded-2xl text-sm ${

@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getUserById } from '../data/mockData';
 import { useStore } from '../data/store';
 import { avatarUrl } from '../utils/images';
 
@@ -56,7 +55,7 @@ export default function OrderDetail() {
   const logs = order.progressLog || [];
   const isProvider = order.provider_id === myId;
   const isDemander = order.demander_id === myId;
-  const otherParty = getUserById(isProvider ? order.demander_id : order.provider_id);
+  const otherParty = store.getUserById(isProvider ? order.demander_id : order.provider_id);
   const currentStatus = order.order_status;
 
   function handleDeliver() {
