@@ -1,5 +1,5 @@
 export const users = [
-  { student_id: '20210001', name: '鲜花饼', college: '计算机科学与技术学院', phone: '13800000001', real_name_status: 1, credit_score: 650, credit_level: 'A', balance: 120.50, points_balance: 300, frozen_amount: 30.00 },
+  { student_id: '20210001', name: '鲜花饼', college: '商学与管理学院', phone: '13800000001', real_name_status: 1, credit_score: 650, credit_level: 'A', balance: 120.50, points_balance: 300, frozen_amount: 30.00 },
   { student_id: '20210101', name: '张明', college: '计算机科学与技术学院', phone: '13800001001', real_name_status: 1, credit_score: 98, credit_level: 'A', balance: 500.00, points_balance: 120, frozen_amount: 0 },
   { student_id: '20210102', name: '李婷', college: '外国语学院', phone: '13800001002', real_name_status: 1, credit_score: 95, credit_level: 'A', balance: 320.50, points_balance: 80, frozen_amount: 0 },
   { student_id: '20210103', name: '王浩', college: '数学学院', phone: '13800001003', real_name_status: 1, credit_score: 88, credit_level: 'B', balance: 200.00, points_balance: 45, frozen_amount: 0 },
@@ -14,7 +14,7 @@ export const users = [
 export const currentUser = {
   student_id: '20210001',
   name: '鲜花饼',
-  college: '计算机科学与技术学院',
+  college: '商学与管理学院',
   phone: '13800000001',
   real_name_status: 1,
   credit_score: 650,

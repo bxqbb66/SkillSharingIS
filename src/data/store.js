@@ -79,7 +79,7 @@ let _account = stored?.account || { balance: 120.50, points_balance: 300, frozen
 // Apply override for user 20210001
 (function() {
   const u = _users.find(u => u.student_id === '20210001');
-  if (u) u.name = '鲜花饼';
+  if (u) { u.name = '鲜花饼'; u.college = '商学与管理学院'; }
 })();
 
 // ----- Pub/Sub -----
