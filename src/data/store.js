@@ -149,12 +149,11 @@ function subscribe(fn) {
   return () => { _listeners = _listeners.filter(f => f !== fn); };
 }
 
-function addNotice(title, content, relatedOrderId = '', type = '系统通知') {
+function addNotice(text, relatedOrderId = '', type = '系统通知') {
   _notifications.unshift({
     id: makeId('notif'),
     type,
-    title,
-    content,
+    text,
     relatedOrderId,
     unread: true,
     time: nowText(),
@@ -286,7 +285,7 @@ export function useStore() {
         order.evaluationStatus = count >= 2 ? '已互评' : '部分评价';
       }
 
-      addNotice('评价已提交', `工单 ${evalData.order_id} 新增一条评价。`, evalData.order_id, '评价通知');
+      addNotice(`评价已提交：工单 ${evalData.order_id} 新增一条评价。`, evalData.order_id, '评价通知');
       persist();
       emit();
       return newEval;
@@ -324,7 +323,7 @@ export function useStore() {
       order.progressLog = [{ time: nowText(), title: '下单', desc: '需求方已发起下单，等待双方确认。' }];
 
       _orders.unshift(order);
-      addNotice('新工单已生成', `${order.task_description} 已创建待确认工单。`, order.order_id, '工单通知');
+      addNotice(`新工单已生成：${order.task_description}，等待双方确认。`, order.order_id, '工单通知');
       persist();
       emit();
       return order;
@@ -352,7 +351,7 @@ export function useStore() {
       order.progressLog = [{ time: nowText(), title: '接单', desc: '服务方已申请接单，等待双方确认。' }];
 
       _orders.unshift(order);
-      addNotice('新工单已生成', `${order.task_description} 已创建待确认工单。`, order.order_id, '工单通知');
+      addNotice(`新工单已生成：${order.task_description}，等待双方确认。`, order.order_id, '工单通知');
       persist();
       emit();
       return order;
@@ -369,7 +368,7 @@ export function useStore() {
         freezeAmount(order);
       }
       order.transactionStatus = '已冻结';
-      addNotice('工单已确认', `${order.task_description} 已进入进行中。`, order.order_id, '工单通知');
+      addNotice(`工单已确认：${order.task_description} 已进入进行中。`, order.order_id, '工单通知');
       persist();
       emit();
       return order;
@@ -385,7 +384,7 @@ export function useStore() {
       order.progressLog.push({
         time: nowText(), title: '提交成果', desc: `服务方已提交成果：${deliveryDesc}`,
       });
-      addNotice('成果待验收', `${order.task_description} 已提交成果，请及时验收。`, order.order_id, '验收提醒');
+      addNotice(`成果待验收：${order.task_description} 已提交成果，请及时验收。`, order.order_id, '验收提醒');
       persist();
       emit();
       return order;
@@ -404,7 +403,7 @@ export function useStore() {
         time: nowText(), title: '验收通过', desc: '需求方验收通过，系统模拟完成结算。',
       });
       transferAmount(order);
-      addNotice('结算已完成', `${order.task_description} 已验收通过并完成结算。`, order.order_id, '结算通知');
+      addNotice(`结算已完成：${order.task_description} 已验收通过并完成结算。`, order.order_id, '结算通知');
       persist();
       emit();
       return order;
@@ -443,7 +442,7 @@ export function useStore() {
       order.arbitrationFlag = '仲裁中';
       order.progressLog = order.progressLog || [];
       order.progressLog.push({ time: nowText(), title: '发起申诉', desc: `用户发起申诉：${appealType}` });
-      addNotice('申诉已提交', `${order.task_description} 已进入申诉中。`, order.order_id, '申诉通知');
+      addNotice(`申诉已提交：${order.task_description} 已进入申诉中。`, order.order_id, '申诉通知');
       persist();
       emit();
       return appeal;
@@ -491,7 +490,7 @@ export function useStore() {
       order.progressLog.push({
         time: nowText(), title: '申诉裁决', desc: `管理员裁决：${decision.description}`,
       });
-      addNotice('申诉裁决结果', `${order.task_description} 裁决结果：${decision.description}`, order.order_id, '申诉通知');
+      addNotice(`申诉裁决结果：${order.task_description} — ${decision.description}`, order.order_id, '申诉通知');
       persist();
       emit();
       return { appeal, order };
@@ -512,7 +511,7 @@ export function useStore() {
       item.audit_opinion = opinion;
       item.audit_time = nowText();
 
-      addNotice('内容审核更新', `${item.skill_tag || item.demand_tag} 审核结果为 ${decision}。${opinion || ''}`, '', '审核通知');
+      addNotice(`内容审核更新：${item.skill_tag || item.demand_tag} 审核${decision}。${opinion || ''}`, '', '审核通知');
       persist();
       emit();
       return item;
@@ -546,7 +545,7 @@ export function useStore() {
 
       order.arbitrationFlag = '异常待核查';
       order.abnormalReason = reason;
-      addNotice('工单异常提醒', `${order.task_description} 已被管理员标记为异常。`, order.order_id, '工单通知');
+      addNotice(`工单异常提醒：${order.task_description} 已被管理员标记为异常。`, order.order_id, '工单通知');
       persist();
       emit();
       return order;
@@ -568,6 +567,7 @@ export function useStore() {
         created_at: nowText(),
       };
       _skills.unshift(skill);
+      addNotice(`技能发布成功：${form.skill_tag}，请等待管理员审核。`, skill.skill_id, '审核通知');
       persist();
       emit();
       return skill;
@@ -589,6 +589,7 @@ export function useStore() {
         created_at: nowText(),
       };
       _demands.unshift(demand);
+      addNotice(`需求发布成功：${form.demand_tag}，请等待管理员审核。`, demand.demand_id, '审核通知');
       persist();
       emit();
       return demand;
@@ -601,7 +602,7 @@ export function useStore() {
         contact.last_message = text;
         contact.last_time = '刚刚';
       }
-      addNotice('新消息', text, '', '聊天消息');
+      addNotice(`新消息：${text}`, '', '聊天消息');
       persist();
       emit();
     }, []),

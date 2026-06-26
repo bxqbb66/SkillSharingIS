@@ -135,6 +135,14 @@ export default function Messages() {
                   n.unread ? 'bg-red-500' : 'bg-gray-300'
                 }`} />
                 <div className="flex-1 min-w-0">
+                  {n.type && (
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded mb-1 inline-block ${
+                      n.type.includes('工单') ? 'bg-blue-50 text-blue-600' :
+                      n.type.includes('审核') ? 'bg-orange-50 text-orange-600' :
+                      n.type.includes('申诉') ? 'bg-red-50 text-red-600' :
+                      'bg-gray-100 text-gray-500'
+                    }`}>{n.type}</span>
+                  )}
                   <p className="text-sm text-gray-700">{n.text}</p>
                   <p className="text-xs text-gray-400 mt-1">{n.time}</p>
                 </div>
