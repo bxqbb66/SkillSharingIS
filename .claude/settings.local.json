@@ -23,7 +23,8 @@
       "Bash(git push *)",
       "Bash(git pull *)",
       "Bash(ls vercel.json)",
-      "Bash(cat vercel.json)"
+      "Bash(cat vercel.json)",
+      "WebFetch(domain:skillsharingis.vercel.app)"
     ]
   }
 }
