@@ -1,7 +1,7 @@
 export const users = [
   { student_id: '20210001', name: '鲜花饼', college: '商学与管理学院', phone: '13800000001', real_name_status: 1, credit_score: 650, credit_level: 'A', balance: 120.50, points_balance: 300, frozen_amount: 30.00 },
   { student_id: '20210101', name: '张明', college: '计算机科学与技术学院', phone: '13800001001', real_name_status: 1, credit_score: 98, credit_level: 'A', balance: 500.00, points_balance: 120, frozen_amount: 0 },
-  { student_id: '20210102', name: '李婷', college: '外国语学院', phone: '13800001002', real_name_status: 1, credit_score: 95, credit_level: 'A', balance: 320.50, points_balance: 80, frozen_amount: 0 },
+  { student_id: '20210102', name: '张冬宇', college: '外国语学院', phone: '13800001002', real_name_status: 1, credit_score: 95, credit_level: 'A', balance: 320.50, points_balance: 80, frozen_amount: 0 },
   { student_id: '20210103', name: '王浩', college: '数学学院', phone: '13800001003', real_name_status: 1, credit_score: 88, credit_level: 'B', balance: 200.00, points_balance: 45, frozen_amount: 0 },
   { student_id: '20210104', name: '赵雪', college: '艺术学院', phone: '13800001004', real_name_status: 1, credit_score: 92, credit_level: 'A', balance: 150.00, points_balance: 60, frozen_amount: 0 },
   { student_id: '20210105', name: '陈强', college: '体育学院', phone: '13800001005', real_name_status: 1, credit_score: 85, credit_level: 'B', balance: 80.00, points_balance: 30, frozen_amount: 0 },
@@ -100,7 +100,7 @@ export const chatMessages = {
     { from: '20210101', text: '好的，那我们定在周五下午3点开始？', time: '14:30' },
   ],
   '20210102': [
-    { from: '20210102', text: '同学你好，我是负责英语辅导的李婷', time: '09:00' },
+    { from: '20210102', text: '同学你好，我是负责英语辅导的张冬宇', time: '09:00' },
     { from: '20210001', text: '你好！我四级阅读比较薄弱', time: '09:10' },
     { from: '20210102', text: '四级阅读的真题我已经发给你了', time: '09:15' },
   ],

@@ -80,6 +80,8 @@ let _account = stored?.account || { balance: 120.50, points_balance: 300, frozen
 (function() {
   const u = _users.find(u => u.student_id === '20210001');
   if (u) { u.name = '鲜花饼'; u.college = '商学与管理学院'; }
+  const u2 = _users.find(u => u.student_id === '20210102');
+  if (u2) u2.name = '张冬宇';
 })();
 
 // ----- Pub/Sub -----
